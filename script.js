@@ -1,150 +1,163 @@
 let chart;
 let ctx;
 let gold = 1000;
+let portfolio = {};
 let markets = {};
-let npcPortfolios = {};
-let allMarkets = ["WHEA", "BEAN", "CORN", "RICE", "CATT", "MOTH", "WAXR", "PHNX", "VRMS", "TRTI", "TOLL"];
+let productDropdown = document.getElementById("productDropdown");
 
-let sectorMap = {
-  "Agricultural Goods": ["WHEA", "BEAN", "CORN", "RICE", "CATT"],
-  "Magical Commodities": ["MOTH", "WAXR", "PHNX"],
-  "Infrastructure Securities": ["VRMS", "TRTI", "TOLL"]
+const initialMarkets = [
+  "WHEA", "BEAN", "CORN", "RICE", "CATT",
+  "MOTH", "WAXR", "PHNX", "VRMS", "TRTI", "TOLL"
+];
+
+let marketDescriptions = {
+  "WHEA": "Wheat – A staple crop tied to harvest conditions and regional demand.",
+  "BEAN": "Beans – High-protein crop favored by southern merchants.",
+  "CORN": "Corn – Key export to the Baronies. Weather-sensitive.",
+  "RICE": "Rice – Traded heavily in the Low Wetlands.",
+  "CATT": "Cattle – Vital for meat and leather markets.",
+  "MOTH": "Moonmoth Dust – Magical catalyst. Price tied to moon phase events.",
+  "WAXR": "Wyrmwax Resin – Refined from underground dragonsap.",
+  "PHNX": "Phoenix Feathers – Rare magical good. Very volatile.",
+  "VRMS": "Verma Steel – Used in golem crafting and military armor.",
+  "TRTI": "Triton Glass – Magical infrastructure conduit.",
+  "TOLL": "Bridge Tolls – Futures based on road traffic in Harm’s Way."
 };
 
-window.addEventListener("DOMContentLoaded", () => {
-  const filterPanel = document.createElement("div");
-  filterPanel.style.marginBottom = "1rem";
-  filterPanel.innerHTML = `<label>Filter by Sector: 
-    <select id="sectorFilter">
-      <option value="all">All Sectors</option>
-      ${Object.keys(sectorMap).map(sector => `<option value="${sector}">${sector}</option>`).join('')}
-    </select>
-  </label>`;
-  document.body.insertBefore(filterPanel, document.getElementById("productDropdown"));
-
-  ctx = document.getElementById("priceChart").getContext("2d");
-  const dropdown = document.getElementById("productDropdown");
-
-  for (const [sector, codes] of Object.entries(sectorMap)) {
-    const optGroup = document.createElement("optgroup");
-    optGroup.label = sector;
-    codes.forEach(code => {
-      markets[code] = Array.from({ length: 50 }, () => 80 + Math.random() * 40);
-      const opt = document.createElement("option");
-      opt.value = code;
-      opt.textContent = code;
-      optGroup.appendChild(opt);
-    });
-    dropdown.appendChild(optGroup);
-  }
-
-  dropdown.addEventListener("change", () => drawChart(dropdown.value));
-
-  document.getElementById("sectorFilter").addEventListener("change", (e) => {
-    const selectedSector = e.target.value;
-    dropdown.innerHTML = "";
-    for (const [sector, codes] of Object.entries(sectorMap)) {
-      if (selectedSector !== "all" && sector !== selectedSector) continue;
-      const optGroup = document.createElement("optgroup");
-      optGroup.label = sector;
-      codes.forEach(code => {
-        const opt = document.createElement("option");
-        opt.value = code;
-        opt.textContent = code;
-        optGroup.appendChild(opt);
-      });
-      dropdown.appendChild(optGroup);
-    }
-    if (dropdown.options.length > 0) {
-      drawChart(dropdown.value);
-    }
-  });
-
-  drawChart(dropdown.value || "WHEA");
-  setInterval(simulateMarketUpdates, 6000);
-  setInterval(simulateNPCTrade, 9000);
-});
-
 function getCurrentPrice(code) {
-  return markets[code][markets[code].length - 1];
+  const series = markets[code];
+  return series[series.length - 1];
+}
+
+function updateGoldDisplay() {
+  document.getElementById("goldDisplay").textContent = gold.toFixed(2);
+}
+
+function updatePortfolioDisplay() {
+  const ul = document.getElementById("portfolioList");
+  ul.innerHTML = "";
+  let hasHoldings = false;
+  for (const [code, entries] of Object.entries(portfolio)) {
+    let totalQty = 0;
+    let totalCost = 0;
+    entries.forEach(p => {
+      totalQty += p.qty;
+      totalCost += p.qty * p.price;
+    });
+    if (totalQty > 0) {
+      hasHoldings = true;
+      const avgCost = totalCost / totalQty;
+      const currentPrice = getCurrentPrice(code);
+      const gainLoss = (currentPrice - avgCost) * totalQty;
+      const li = document.createElement("li");
+      li.textContent = `${code}: ${totalQty} @ ${avgCost.toFixed(2)} → ${currentPrice.toFixed(2)} (P/L: ${gainLoss >= 0 ? '+' : ''}${gainLoss.toFixed(2)})`;
+      ul.appendChild(li);
+    }
+  }
+  if (!hasHoldings) ul.innerHTML = "<li>None owned</li>";
+}
+
+function updateSecurityDetails(code) {
+  const price = getCurrentPrice(code);
+  const prices = markets[code];
+  const change = price - prices[prices.length - 2];
+  const volatility = Math.sqrt(prices.reduce((acc, p) => acc + Math.pow(p - price, 2), 0) / prices.length);
+
+  document.getElementById("priceData").textContent = `Current Price: ${price.toFixed(2)} Marks`;
+  document.getElementById("descriptionData").textContent = marketDescriptions[code] || "No description available.";
+  document.getElementById("volatilityData").textContent = `📊 Volatility: ${volatility.toFixed(2)}`;
+  document.getElementById("changeData").textContent = `📈 Change: ${change >= 0 ? '+' : ''}${change.toFixed(2)} Marks`;
 }
 
 function drawChart(code) {
-  const data = markets[code];
+  if (!markets[code]) return;
+  updateSecurityDetails(code);
   if (chart) chart.destroy();
   chart = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: data.map((_, i) => i),
-      datasets: [{ label: code, data, borderColor: 'lime', tension: 0.3 }]
+      labels: markets[code].map((_, i) => i),
+      datasets: [{
+        label: `${code} Price History`,
+        data: markets[code],
+        borderColor: 'lime',
+        backgroundColor: 'rgba(0,255,0,0.2)',
+        fill: true,
+        tension: 0.3
+      }]
     },
-    options: { scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } }
-  });
-
-  const current = getCurrentPrice(code);
-  const min = Math.min(...data);
-  const max = Math.max(...data);
-  const avg = (data.reduce((a, b) => a + b, 0) / data.length).toFixed(2);
-  const change = (current - data[0]).toFixed(2);
-  const pctChange = ((change / data[0]) * 100).toFixed(2);
-  document.getElementById("priceData").innerHTML = `
-    <div><strong>Current Price:</strong> ${current.toFixed(2)} Marks</div>
-    <div><strong>Average Price:</strong> ${avg} Marks</div>
-    <div><strong>High:</strong> ${max.toFixed(2)} | <strong>Low:</strong> ${min.toFixed(2)}</div>
-    <div><strong>Change:</strong> ${change} Marks (${pctChange}%) from start</div>
-  `;
-}
-
-function simulateMarketUpdates() {
-  allMarkets.forEach(code => {
-    const volatility = Math.random() < 0.02 ? 50 : Math.floor(Math.random() * 8);
-    const direction = Math.random() < 0.5 ? -1 : 1;
-    const current = getCurrentPrice(code);
-    const newPrice = Math.max(1, current + direction * volatility);
-    markets[code].push(newPrice);
-    if (markets[code].length > 50) markets[code].shift();
-    if (code === document.getElementById("productDropdown").value) drawChart(code);
+    options: {
+      responsive: true,
+      scales: {
+        x: { display: false },
+        y: { beginAtZero: false, ticks: { color: '#fff' }, grid: { color: '#333' } }
+      },
+      plugins: {
+        legend: { labels: { color: '#fff' } }
+      }
+    }
   });
 }
 
-function simulateNPCTrade() {
-  const npcList = [
-    { name: "The Royal Frog Bank", sector: "Agricultural Goods" },
-    { name: "TLBN: Respectible Moneylenders", sector: "Infrastructure Securities" },
-    { name: "Oswald Bank", sector: "Magical Commodities" }
-  ];
-
-  npcList.forEach(npc => {
-    if (!npcPortfolios[npc.name]) npcPortfolios[npc.name] = {};
-  });
-
-  const npc = npcList[Math.floor(Math.random() * npcList.length)];
-  const candidates = sectorMap[npc.sector];
-  const target = candidates[Math.floor(Math.random() * candidates.length)];
-  const direction = Math.random() > 0.5 ? "bought" : "sold";
-  const volume = Math.floor(Math.random() * 100 + 20);
-  const amount = Math.floor(Math.random() * 20 + 5);
-
-  if (!npcPortfolios[npc.name][target]) npcPortfolios[npc.name][target] = 0;
-  npcPortfolios[npc.name][target] += (direction === "bought" ? amount : -amount);
-
-  const message = `${new Date().toLocaleTimeString()} 🏦 ${npc.name} ${direction} ${amount} units of ${target} (vol: ${volume})`;
-
+function logTrade(action, code, qty, price) {
+  const msg = `${new Date().toLocaleTimeString()} 💱 ${action.toUpperCase()} ${qty} ${code} @ ${price.toFixed(2)}`;
   const log = document.createElement("div");
-  log.textContent = message;
+  log.textContent = msg;
   document.getElementById("eventArchive").prepend(log);
-  document.getElementById("newsTicker").textContent = `🧾 ${npc.name} ${direction} ${target} (vol: ${volume})`;
-  updateNPCPanel();
 }
 
-function updateNPCPanel() {
-  const npcLog = document.getElementById("npcLog");
-  npcLog.innerHTML = "";
-  Object.entries(npcPortfolios).forEach(([name, holdings]) => {
-    const li = document.createElement("li");
-    li.innerHTML = `<strong>${name}:</strong> ` + Object.entries(holdings)
-      .filter(([_, qty]) => qty !== 0)
-      .map(([code, qty]) => `${code}: ${qty}`).join(", ") || "(no holdings)";
-    npcLog.appendChild(li);
-  });
+function buyCurrent() {
+  const code = productDropdown.value;
+  const qty = parseInt(document.getElementById("tradeQty").value);
+  const price = getCurrentPrice(code);
+  const cost = qty * price;
+  if (gold >= cost) {
+    gold -= cost;
+    if (!portfolio[code]) portfolio[code] = [];
+    portfolio[code].push({ qty, price });
+    updateGoldDisplay();
+    updatePortfolioDisplay();
+    logTrade("buy", code, qty, price);
+  } else {
+    alert("Not enough Marks!");
+  }
 }
+
+function sellCurrent() {
+  const code = productDropdown.value;
+  const qty = parseInt(document.getElementById("tradeQty").value);
+  const price = getCurrentPrice(code);
+  if (!portfolio[code] || portfolio[code].length === 0) return alert("Nothing to sell.");
+
+  let remaining = qty;
+  let gained = 0;
+  while (remaining > 0 && portfolio[code].length > 0) {
+    const lot = portfolio[code][0];
+    const sellQty = Math.min(lot.qty, remaining);
+    gained += sellQty * price;
+    lot.qty -= sellQty;
+    if (lot.qty === 0) portfolio[code].shift();
+    remaining -= sellQty;
+  }
+  gold += gained;
+  updateGoldDisplay();
+  updatePortfolioDisplay();
+  logTrade("sell", code, qty, price);
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  ctx = document.getElementById("priceChart").getContext("2d");
+  initialMarkets.forEach(code => {
+    markets[code] = Array.from({ length: 50 }, () => 80 + Math.random() * 40);
+    const opt = document.createElement("option");
+    opt.value = code;
+    opt.textContent = code;
+    productDropdown.appendChild(opt);
+  });
+  productDropdown.addEventListener("change", () => drawChart(productDropdown.value));
+  document.getElementById("buyButton").addEventListener("click", buyCurrent);
+  document.getElementById("sellButton").addEventListener("click", sellCurrent);
+  updateGoldDisplay();
+  updatePortfolioDisplay();
+  drawChart(productDropdown.value || "WHEA");
+});
