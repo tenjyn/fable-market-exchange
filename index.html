@@ -4,12 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Fable Market Exchange</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css"/>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <h1>📈 Fable Market Exchange</h1>
-
   <label for="productDropdown">Select Security:</label>
   <select id="productDropdown" size="10" style="width: 100%; max-height: 250px; overflow-y: auto;"></select>
 
@@ -20,10 +19,13 @@
   <div id="priceStats">
     <strong>Security Stats:</strong>
     <div id="priceData">📉 Select a security to view statistics.</div>
+    <div id="descriptionData">ℹ️ Description will appear here.</div>
+    <div id="volatilityData">📊 Volatility: N/A</div>
+    <div id="changeData">📈 Change: N/A</div>
   </div>
 
   <div>
-    <input type="number" id="tradeQty" placeholder="Quantity" min="1" value="10" />
+    <input type="number" id="tradeQty" placeholder="Quantity" min="1" value="10"/>
     <button id="buyButton">Buy</button>
     <button id="sellButton">Sell</button>
   </div>
