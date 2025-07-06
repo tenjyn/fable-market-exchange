@@ -34,6 +34,7 @@ select, button, input {
   background: #1b1b1b;
   border: 1px solid #333;
   margin-bottom: 1rem;
+  padding: 0.5rem;
 }
 
 canvas {
