@@ -5,6 +5,7 @@ body {
   margin: 0;
   padding: 1rem;
 }
+
 select, button, input {
   background-color: #222;
   color: #fff;
@@ -12,6 +13,7 @@ select, button, input {
   padding: 0.5rem;
   margin: 0.5rem 0;
 }
+
 #chartContainer {
   height: 200px;
   background: #222;
@@ -20,20 +22,58 @@ select, button, input {
   justify-content: center;
   margin-bottom: 1rem;
 }
+
 #priceStats {
   margin-bottom: 1rem;
   background: #1b1b1b;
   border: 1px solid #333;
   padding: 0.5rem;
 }
+
 #portfolioPanel, #eventArchive, #npcPanel {
   background: #1b1b1b;
   border: 1px solid #333;
   margin-bottom: 1rem;
   padding: 0.5rem;
 }
+
 canvas {
   width: 100%;
   height: 200px;
   background: #111;
+}
+
+/* 🔥 Portfolio Layout */
+.portfolio-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.asset-card {
+  background: #222;
+  padding: 0.5rem;
+  border: 1px solid #333;
+  display: flex;
+  flex-direction: column;
+}
+
+.asset-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.asset-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.asset-actions button {
+  flex: 1;
+  background: #333;
+  color: #fff;
+  border: 1px solid #444;
+  cursor: pointer;
 }
