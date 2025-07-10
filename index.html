@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Fable Market Exchange</title>
   <link rel="stylesheet" href="style.css"/>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <h1>📈 Fable Market Exchange</h1>
@@ -25,7 +24,7 @@
   </div>
 
   <div>
-    <input type="number" id="tradeQty" placeholder="Quantity" min="1" value="10"/>
+    <input type="number" id="tradeQty" placeholder="Quantity" min="1" value="10">
     <button id="buyButton">Buy</button>
     <button id="sellButton">Sell</button>
   </div>
@@ -40,6 +39,7 @@
   <div id="eventArchive"><em>Waiting for trades...</em></div>
   <div id="npcPanel"><strong>NPC Activity:</strong><ul id="npcLog"></ul></div>
 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
