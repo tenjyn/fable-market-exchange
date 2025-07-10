@@ -72,7 +72,7 @@ function drawChart(code) {
   updateSecurityDetails(code);
   if (chart) chart.destroy();
   chart = new Chart(ctx, {
-    type: 'line',
+    type: 'line",
     data: {
       labels: markets[code].map((_, i) => i),
       datasets: [{
