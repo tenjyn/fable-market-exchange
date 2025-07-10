@@ -15,6 +15,12 @@ const marketDescriptions = {
   CATT: "Cattle – priced for meat, milk, and magical marrow."
 };
 
+const npcNames = [
+  "The Royal Frog Bank 🐸",
+  "Oswald Bank 🐺",
+  "TLBN: Respectible Moneylenders 🪙"
+];
+
 function getCurrentPrice(code) {
   const series = markets[code];
   return series?.[series.length - 1] || 0;
@@ -143,8 +149,9 @@ function simulateNPCTrade() {
   const code = initialMarkets[Math.floor(Math.random() * initialMarkets.length)];
   const direction = Math.random() > 0.5 ? "buy" : "sell";
   const volume = Math.floor(Math.random() * 10 + 1);
-  const news = `${new Date().toLocaleTimeString()} 🧾 NPC ${direction} ${code} (vol: ${volume})`;
-  const log = document.createElement("div");
+  const npc = npcNames[Math.floor(Math.random() * npcNames.length)];
+  const news = `${new Date().toLocaleTimeString()} 🧾 ${npc} ${direction} ${code} (vol: ${volume})`;
+  const log = document.createElement("li");
   log.textContent = news;
   document.getElementById("npcLog").prepend(log);
   document.getElementById("newsTicker").textContent = news;
@@ -168,7 +175,7 @@ window.addEventListener("DOMContentLoaded", () => {
     markets[code] = Array.from({ length: 50 }, () => 80 + Math.random() * 40);
     const opt = document.createElement("option");
     opt.value = code;
-    opt.textContent = code;
+    opt.textContent = `${code} – ${marketDescriptions[code] || ""}`;
     productDropdown.appendChild(opt);
   });
   productDropdown.addEventListener("change", () => drawChart(productDropdown.value));
