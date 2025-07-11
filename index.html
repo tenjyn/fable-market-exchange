@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fable Market Exchange</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <h1>📈 Fable Market Exchange</h1>
-
   <label for="productDropdown">Select Security:</label>
-  <select id="productDropdown" size="10" style="width: 100%; max-height: 250px; overflow-y: auto;"></select>
+  <select id="productDropdown" size="10"></select>
 
   <div id="chartContainer">
     <canvas id="priceChart"></canvas>
@@ -26,16 +25,14 @@
   </div>
 
   <div>
-    <input type="number" id="tradeQty" placeholder="Quantity" min="1" value="10" />
+    <input type="number" id="tradeQty" placeholder="Quantity" min="1" value="10">
     <button id="buyButton">Buy</button>
     <button id="sellButton">Sell</button>
   </div>
 
   <div id="portfolioPanel">
     <strong>Portfolio</strong>
-    <div id="portfolioList" class="portfolio-grid">
-      <em>Loading...</em>
-    </div>
+    <ul id="portfolioList"><li>None owned</li></ul>
     <div><strong>Marks:</strong> <span id="goldDisplay">1000</span></div>
   </div>
 
@@ -44,7 +41,5 @@
   <div id="npcPanel"><strong>NPC Activity:</strong><ul id="npcLog"></ul></div>
 
   <script src="script.js"></script>
-  <button id="exportCSV">Export Portfolio</button>
-
 </body>
 </html>
