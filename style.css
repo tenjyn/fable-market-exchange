@@ -1,79 +1,128 @@
+/* Global Dark Theme */
 body {
-  background-color: #111;
-  color: #fff;
-  font-family: sans-serif;
+  background-color: #0d0d0d;
+  color: #f0f0f0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
-  padding: 1rem;
+  padding: 1.5rem;
+  line-height: 1.6;
 }
 
-select, button, input {
+/* Headings */
+h1 {
+  font-size: 1.8rem;
+  color: #89f0ff;
+  margin-bottom: 1rem;
+}
+
+/* Dropdown Menu */
+select {
+  width: 100%;
+  background-color: #1a1a1a;
+  color: #f0f0f0;
+  border: 1px solid #333;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  height: auto;
+}
+
+/* Inputs and Buttons */
+input[type="number"],
+button {
   background-color: #222;
-  color: #fff;
-  border: 1px solid #555;
-  padding: 0.5rem;
-  margin: 0.5rem 0;
+  color: #f0f0f0;
+  border: 1px solid #444;
+  padding: 0.4rem 0.8rem;
+  margin: 0.25rem 0.5rem 0.75rem 0;
+  font-size: 0.9rem;
+  border-radius: 4px;
 }
 
+button:hover {
+  background-color: #333;
+  cursor: pointer;
+}
+
+/* Chart Container */
 #chartContainer {
-  height: 200px;
-  background: #222;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 1rem;
-}
-
-#priceStats {
-  margin-bottom: 1rem;
-  background: #1b1b1b;
+  background-color: #111;
   border: 1px solid #333;
-  padding: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
 }
 
-#portfolioPanel, #eventArchive, #npcPanel {
-  background: #1b1b1b;
-  border: 1px solid #333;
-  margin-bottom: 1rem;
-  padding: 0.5rem;
-}
-
+/* Chart Element */
 canvas {
   width: 100%;
   height: 200px;
-  background: #111;
+  background-color: #0f0f0f;
+  border-radius: 4px;
 }
 
-/* 🔥 Portfolio Layout */
-.portfolio-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.asset-card {
-  background: #222;
-  padding: 0.5rem;
+/* Stats Panel */
+#priceStats {
+  background-color: #1a1a1a;
   border: 1px solid #333;
-  display: flex;
-  flex-direction: column;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
 }
 
-.asset-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.asset-actions {
-  display: flex;
-  gap: 0.5rem;
+#priceStats div {
   margin-top: 0.5rem;
 }
 
-.asset-actions button {
-  flex: 1;
-  background: #333;
-  color: #fff;
-  border: 1px solid #444;
-  cursor: pointer;
+/* Portfolio Section */
+#portfolioPanel {
+  background-color: #161616;
+  border: 1px solid #333;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+#portfolioList {
+  list-style: none;
+  padding-left: 0;
+  margin: 0.5rem 0;
+}
+
+#portfolioList li {
+  padding: 0.2rem 0;
+}
+
+/* News and Archive */
+#newsTicker {
+  background-color: #202020;
+  padding: 0.75rem;
+  border-left: 4px solid #7ad9ff;
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
+
+#eventArchive {
+  background-color: #1b1b1b;
+  border: 1px solid #333;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* NPC Panel */
+#npcPanel {
+  background-color: #191919;
+  border: 1px solid #333;
+  padding: 1rem;
+  font-size: 0.95rem;
+}
+
+#npcLog {
+  list-style-type: circle;
+  padding-left: 1rem;
+  margin-top: 0.5rem;
+}
+
+#npcLog li {
+  margin-bottom: 0.4rem;
+  color: #aaffcc;
 }
