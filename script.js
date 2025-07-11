@@ -1,188 +1,132 @@
-let chart;
-let ctx;
-let gold = 1000;
-let portfolio = {};
-let markets = {};
-let productDropdown;
+// script.js
 
-const initialMarkets = ["WHEA", "BEAN", "CORN", "RICE", "CATT"];
+document.addEventListener("DOMContentLoaded", () => {
+  // Global Variables
+  let gold = 1000;
+  const portfolio = {};
+  const securities = generateSecurities();
+  let selected = null;
+  let priceChart = null;
 
-const marketDescriptions = {
-  WHEA: "Wheat – staple crop tied to harvests and storms.",
-  BEAN: "Beans – hearty and beloved by Bushai traders.",
-  CORN: "Corn – favored export, tracked by barony tariffs.",
-  RICE: "Rice – dominant in the southern wetlands.",
-  CATT: "Cattle – priced for meat, milk, and magical marrow."
-};
+  const dropdown = document.getElementById("productDropdown");
+  const goldDisplay = document.getElementById("goldDisplay");
+  const newsTicker = document.getElementById("newsTicker");
+  const portfolioList = document.getElementById("portfolioList");
 
-const npcNames = [
-  "The Royal Frog Bank 🐸",
-  "Oswald Bank 🐺",
-  "TLBN: Respectible Moneylenders 🪙"
-];
+  // Populate dropdown
+  securities.forEach(sec => {
+    const option = document.createElement("option");
+    option.value = sec.code;
+    option.textContent = `${sec.code} - ${sec.name}`;
+    dropdown.appendChild(option);
+  });
 
-function getCurrentPrice(code) {
-  const series = markets[code];
-  return series?.[series.length - 1] || 0;
-}
+  dropdown.addEventListener("change", () => {
+    selected = securities.find(s => s.code === dropdown.value);
+    updateStats(selected);
+    drawChart(selected);
+  });
 
-function updateGoldDisplay() {
-  document.getElementById("goldDisplay").textContent = gold.toFixed(2);
-}
+  document.getElementById("buyButton").addEventListener("click", () => trade("buy"));
+  document.getElementById("sellButton").addEventListener("click", () => trade("sell"));
 
-function updatePortfolioDisplay() {
-  const ul = document.getElementById("portfolioList");
-  ul.innerHTML = "";
-  let hasHoldings = false;
-  for (const [code, entries] of Object.entries(portfolio)) {
-    let totalQty = 0;
-    let totalCost = 0;
-    entries.forEach(p => {
-      totalQty += p.qty;
-      totalCost += p.qty * p.price;
-    });
-    if (totalQty > 0) {
-      hasHoldings = true;
-      const avgCost = totalCost / totalQty;
-      const currentPrice = getCurrentPrice(code);
-      const gainLoss = (currentPrice - avgCost) * totalQty;
-      const li = document.createElement("li");
-      li.textContent = `${code}: ${totalQty} @ ${avgCost.toFixed(2)} → ${currentPrice.toFixed(2)} (P/L: ${gainLoss >= 0 ? '+' : ''}${gainLoss.toFixed(2)})`;
-      ul.appendChild(li);
-    }
+  function generateSecurities() {
+    return [
+      { code: "WHT", name: "Wheat Futures", price: 120, desc: "Grain commodity.", sector: "Grain", volatility: 0.03 },
+      { code: "OBL", name: "Oswald Bonds", price: 200, desc: "Infrastructure bond.", sector: "Infrastructure", volatility: 0.02 },
+      { code: "FMR", name: "Fae Mirror Shards", price: 350, desc: "Luxury magical good.", sector: "Magical", volatility: 0.08 }
+    ];
   }
-  if (!hasHoldings) ul.innerHTML = "<li>None owned</li>";
-}
 
-function updateSecurityDetails(code) {
-  const price = getCurrentPrice(code);
-  const prices = markets[code];
-  if (!prices) return;
-  const change = price - prices[prices.length - 2];
-  const volatility = Math.sqrt(prices.reduce((acc, p) => acc + Math.pow(p - price, 2), 0) / prices.length);
+  function updateStats(security) {
+    document.getElementById("priceData").textContent = `Current Price: ${security.price.toFixed(2)} Marks`;
+    document.getElementById("descriptionData").textContent = security.desc;
+    document.getElementById("volatilityData").textContent = `Volatility: ${security.volatility}`;
+  }
 
-  document.getElementById("priceData").textContent = `Current Price: ${price.toFixed(2)} Marks`;
-  document.getElementById("descriptionData").textContent = marketDescriptions[code] || "No description available.";
-  document.getElementById("volatilityData").textContent = `📊 Volatility: ${volatility.toFixed(2)}`;
-  document.getElementById("changeData").textContent = `📈 Change: ${change >= 0 ? '+' : ''}${change.toFixed(2)} Marks`;
-}
-
-function drawChart(code) {
-  if (!markets[code]) return;
-  updateSecurityDetails(code);
-  if (chart) chart.destroy();
-  chart = new Chart(ctx, {
-    type: 'line",
-    data: {
-      labels: markets[code].map((_, i) => i),
-      datasets: [{
-        label: `${code} Price History`,
-        data: markets[code],
-        borderColor: 'lime',
-        backgroundColor: 'rgba(0,255,0,0.2)',
-        fill: true,
-        tension: 0.3
-      }]
-    },
-    options: {
-      responsive: true,
-      scales: {
-        x: { display: false },
-        y: { beginAtZero: false, ticks: { color: '#fff' }, grid: { color: '#333' } }
+  function drawChart(security) {
+    const ctx = document.getElementById("priceChart").getContext("2d");
+    if (priceChart) priceChart.destroy();
+    const history = generatePriceHistory(security.price, security.volatility);
+    priceChart = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: history.map((_, i) => `T-${history.length - i}`),
+        datasets: [{
+          label: security.code,
+          data: history,
+          borderColor: "#7ad9ff",
+          backgroundColor: "rgba(122, 217, 255, 0.1)",
+          fill: true
+        }]
       },
-      plugins: {
-        legend: { labels: { color: '#fff' } }
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { display: false },
+          y: { beginAtZero: false }
+        }
       }
+    });
+  }
+
+  function generatePriceHistory(base, vol) {
+    const history = [];
+    let current = base;
+    for (let i = 0; i < 30; i++) {
+      const change = current * (Math.random() * vol * 2 - vol);
+      current = Math.max(1, current + change);
+      history.push(current.toFixed(2));
     }
-  });
-}
-
-function logTrade(action, code, qty, price) {
-  const msg = `${new Date().toLocaleTimeString()} 💱 ${action.toUpperCase()} ${qty} ${code} @ ${price.toFixed(2)}`;
-  const log = document.createElement("div");
-  log.textContent = msg;
-  document.getElementById("eventArchive").prepend(log);
-}
-
-function buyCurrent() {
-  const code = productDropdown.value;
-  const qty = parseInt(document.getElementById("tradeQty").value);
-  const price = getCurrentPrice(code);
-  const cost = qty * price;
-  if (gold >= cost) {
-    gold -= cost;
-    if (!portfolio[code]) portfolio[code] = [];
-    portfolio[code].push({ qty, price });
-    updateGoldDisplay();
-    updatePortfolioDisplay();
-    saveGame();
-    logTrade("buy", code, qty, price);
-  } else {
-    alert("Not enough Marks!");
+    return history;
   }
-}
 
-function sellCurrent() {
-  const code = productDropdown.value;
-  const qty = parseInt(document.getElementById("tradeQty").value);
-  const price = getCurrentPrice(code);
-  if (!portfolio[code] || portfolio[code].length === 0) return alert("Nothing to sell.");
+  function trade(type) {
+    if (!selected) return;
+    const qty = parseInt(document.getElementById("tradeQty").value);
+    if (isNaN(qty) || qty <= 0) return;
+    const total = qty * selected.price;
+    const key = selected.code;
 
-  let remaining = qty;
-  let gained = 0;
-  while (remaining > 0 && portfolio[code].length > 0) {
-    const lot = portfolio[code][0];
-    const sellQty = Math.min(lot.qty, remaining);
-    gained += sellQty * price;
-    lot.qty -= sellQty;
-    if (lot.qty === 0) portfolio[code].shift();
-    remaining -= sellQty;
+    if (type === "buy" && gold >= total) {
+      gold -= total;
+      if (!portfolio[key]) portfolio[key] = 0;
+      portfolio[key] += qty;
+      logEvent(`✅ Bought ${qty} ${key} for ${total.toFixed(2)} Marks`);
+    } else if (type === "sell" && portfolio[key] >= qty) {
+      gold += total;
+      portfolio[key] -= qty;
+      if (portfolio[key] === 0) delete portfolio[key];
+      logEvent(`🪙 Sold ${qty} ${key} for ${total.toFixed(2)} Marks`);
+    } else {
+      logEvent(`⚠️ Trade failed: Check quantity or funds.`);
+    }
+
+    updatePortfolio();
   }
-  gold += gained;
-  updateGoldDisplay();
-  updatePortfolioDisplay();
-  saveGame();
-  logTrade("sell", code, qty, price);
-}
 
-function simulateNPCTrade() {
-  const code = initialMarkets[Math.floor(Math.random() * initialMarkets.length)];
-  const direction = Math.random() > 0.5 ? "buy" : "sell";
-  const volume = Math.floor(Math.random() * 10 + 1);
-  const npc = npcNames[Math.floor(Math.random() * npcNames.length)];
-  const news = `${new Date().toLocaleTimeString()} 🧾 ${npc} ${direction} ${code} (vol: ${volume})`;
-  const log = document.createElement("li");
-  log.textContent = news;
-  document.getElementById("npcLog").prepend(log);
-  document.getElementById("newsTicker").textContent = news;
-}
+  function updatePortfolio() {
+    goldDisplay.textContent = gold.toFixed(2);
+    portfolioList.innerHTML = "";
+    if (Object.keys(portfolio).length === 0) {
+      portfolioList.innerHTML = "<li>None owned</li>";
+      return;
+    }
+    for (const code in portfolio) {
+      const sec = securities.find(s => s.code === code);
+      const val = sec.price * portfolio[code];
+      const li = document.createElement("li");
+      li.textContent = `${code}: ${portfolio[code]} units (≈ ${val.toFixed(2)} Marks)`;
+      portfolioList.appendChild(li);
+    }
+  }
 
-function saveGame() {
-  localStorage.setItem("portfolio", JSON.stringify(portfolio));
-  localStorage.setItem("gold", gold.toString());
-}
-
-function loadGame() {
-  portfolio = JSON.parse(localStorage.getItem("portfolio")) || {};
-  gold = parseFloat(localStorage.getItem("gold")) || 1000;
-}
-
-window.addEventListener("DOMContentLoaded", () => {
-  ctx = document.getElementById("priceChart").getContext("2d");
-  productDropdown = document.getElementById("productDropdown");
-  loadGame();
-  initialMarkets.forEach(code => {
-    markets[code] = Array.from({ length: 50 }, () => 80 + Math.random() * 40);
-    const opt = document.createElement("option");
-    opt.value = code;
-    opt.textContent = `${code} – ${marketDescriptions[code] || ""}`;
-    productDropdown.appendChild(opt);
-  });
-  productDropdown.addEventListener("change", () => drawChart(productDropdown.value));
-  document.getElementById("buyButton").addEventListener("click", buyCurrent);
-  document.getElementById("sellButton").addEventListener("click", sellCurrent);
-  updateGoldDisplay();
-  updatePortfolioDisplay();
-  drawChart(productDropdown.value || "WHEA");
-  setInterval(simulateNPCTrade, 10000);
+  function logEvent(message) {
+    const archive = document.getElementById("eventArchive");
+    const time = new Date().toLocaleTimeString();
+    const entry = document.createElement("div");
+    entry.textContent = `[${time}] ${message}`;
+    archive.prepend(entry);
+  }
 });
