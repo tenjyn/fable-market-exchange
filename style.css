@@ -1,128 +1,63 @@
-/* Global Dark Theme */
+/* details.css */
 body {
-  background-color: #0d0d0d;
+  background-color: #0e0e0e;
   color: #f0f0f0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Segoe UI', sans-serif;
   margin: 0;
-  padding: 1.5rem;
-  line-height: 1.6;
+  padding: 0;
 }
 
-/* Headings */
-h1 {
-  font-size: 1.8rem;
-  color: #89f0ff;
-  margin-bottom: 1rem;
+.container {
+  max-width: 960px;
+  margin: auto;
+  padding: 20px;
 }
 
-/* Dropdown Menu */
-select {
-  width: 100%;
-  background-color: #1a1a1a;
-  color: #f0f0f0;
-  border: 1px solid #333;
-  padding: 0.5rem;
-  margin-bottom: 1rem;
-  height: auto;
+header {
+  text-align: center;
+  margin-bottom: 20px;
 }
 
-/* Inputs and Buttons */
-input[type="number"],
-button {
-  background-color: #222;
-  color: #f0f0f0;
-  border: 1px solid #444;
-  padding: 0.4rem 0.8rem;
-  margin: 0.25rem 0.5rem 0.75rem 0;
-  font-size: 0.9rem;
-  border-radius: 4px;
-}
-
-button:hover {
-  background-color: #333;
-  cursor: pointer;
-}
-
-/* Chart Container */
-#chartContainer {
-  background-color: #111;
-  border: 1px solid #333;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-/* Chart Element */
-canvas {
-  width: 100%;
-  height: 200px;
-  background-color: #0f0f0f;
-  border-radius: 4px;
-}
-
-/* Stats Panel */
-#priceStats {
-  background-color: #1a1a1a;
-  border: 1px solid #333;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-#priceStats div {
-  margin-top: 0.5rem;
-}
-
-/* Portfolio Section */
-#portfolioPanel {
-  background-color: #161616;
-  border: 1px solid #333;
-  padding: 1rem;
-  margin-bottom: 1rem;
-}
-
-#portfolioList {
-  list-style: none;
-  padding-left: 0;
-  margin: 0.5rem 0;
-}
-
-#portfolioList li {
-  padding: 0.2rem 0;
-}
-
-/* News and Archive */
 #newsTicker {
-  background-color: #202020;
-  padding: 0.75rem;
-  border-left: 4px solid #7ad9ff;
-  margin-bottom: 1rem;
-  font-weight: bold;
+  background-color: #1a1a1a;
+  padding: 10px;
+  font-size: 1.1em;
+  border-left: 5px solid #ffc107;
+  margin-top: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  animation: scrollTicker 25s linear infinite;
 }
 
-#eventArchive {
-  background-color: #1b1b1b;
-  border: 1px solid #333;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
-  max-height: 200px;
-  overflow-y: auto;
+@keyframes scrollTicker {
+  from { transform: translateX(100%); }
+  to { transform: translateX(-100%); }
 }
 
-/* NPC Panel */
-#npcPanel {
-  background-color: #191919;
-  border: 1px solid #333;
-  padding: 1rem;
-  font-size: 0.95rem;
+.security-info, .npc-activity {
+  background: #1c1c1c;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
 }
 
-#npcLog {
-  list-style-type: circle;
-  padding-left: 1rem;
-  margin-top: 0.5rem;
+.security-info ul {
+  list-style: none;
+  padding: 0;
 }
 
-#npcLog li {
-  margin-bottom: 0.4rem;
-  color: #aaffcc;
+.security-info li {
+  margin-bottom: 10px;
+}
+
+canvas {
+  margin-top: 20px;
+}
+
+footer {
+  text-align: center;
+  padding: 10px;
+  font-size: 0.9em;
+  color: #aaa;
 }
