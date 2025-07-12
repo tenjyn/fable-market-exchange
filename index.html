@@ -3,42 +3,39 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Security Details - Fable Market Exchange</title>
+  <title>Security Details - Fable Markets</title>
   <link rel="stylesheet" href="details.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <div class="container">
+  <div id="container">
     <header>
-      <h1>Security Details</h1>
-      <p id="newsTicker">📢 Loading news updates...</p>
+      <h1 id="securityTitle">Security Details</h1>
+      <div id="newsTickerWrapper">
+        <span id="newsTicker">Loading market news...</span>
+      </div>
     </header>
 
     <main>
-      <section class="security-info">
-        <h2 id="securityName">Wheat Futures (WHT)</h2>
-        <ul>
-          <li><strong>Sector:</strong> <span id="securitySector">Grain</span></li>
-          <li><strong>Description:</strong> <span id="securityDesc">Grain commodity.</span></li>
-          <li><strong>Volatility:</strong> <span id="securityVol">0.03</span></li>
-          <li><strong>Current Price:</strong> <span id="securityPrice">120 Marks</span></li>
-        </ul>
-        <canvas id="securityChart" width="600" height="300"></canvas>
+      <section id="securityInfo">
+        <p><strong>Sector:</strong> <span id="sector"></span></p>
+        <p><strong>Description:</strong> <span id="description"></span></p>
+        <p><strong>Volatility:</strong> <span id="volatility"></span></p>
+        <p><strong>Current Price:</strong> <span id="currentPrice"></span> Marks</p>
       </section>
 
-      <section class="npc-activity">
-        <h3>NPC Trading Archive</h3>
-        <ul id="npcTradeLog">
-          <li>Loading trade activity...</li>
-        </ul>
+      <section id="chartSection">
+        <canvas id="historyChart" width="800" height="400"></canvas>
+      </section>
+
+      <section id="recentActivity">
+        <h2>Recent NPC Activity</h2>
+        <ul id="npcActivityLog"></ul>
       </section>
     </main>
-
-    <footer>
-      <p>&copy; Fable Markets Consortium</p>
-    </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="details.js"></script>
   </div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="script.js"></script>
+  <script src="details.js"></script>
 </body>
 </html>
