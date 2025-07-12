@@ -1,46 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fable Market Exchange</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Security Details - Fable Market Exchange</title>
+  <link rel="stylesheet" href="details.css" />
 </head>
 <body>
-  <h1>📈 Fable Market Exchange</h1>
-  <label for="productDropdown">Select Security:</label>
-  <select id="productDropdown" size="10"></select>
+  <div class="container">
+    <header>
+      <h1>Security Details</h1>
+      <p id="newsTicker">📢 Loading news updates...</p>
+    </header>
 
-  <div id="chartContainer">
-    <canvas id="priceChart"></canvas>
+    <main>
+      <section class="security-info">
+        <h2 id="securityName">Wheat Futures (WHT)</h2>
+        <ul>
+          <li><strong>Sector:</strong> <span id="securitySector">Grain</span></li>
+          <li><strong>Description:</strong> <span id="securityDesc">Grain commodity.</span></li>
+          <li><strong>Volatility:</strong> <span id="securityVol">0.03</span></li>
+          <li><strong>Current Price:</strong> <span id="securityPrice">120 Marks</span></li>
+        </ul>
+        <canvas id="securityChart" width="600" height="300"></canvas>
+      </section>
+
+      <section class="npc-activity">
+        <h3>NPC Trading Archive</h3>
+        <ul id="npcTradeLog">
+          <li>Loading trade activity...</li>
+        </ul>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; Fable Markets Consortium</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="details.js"></script>
   </div>
-
-  <div id="priceStats">
-    <strong>Security Stats:</strong>
-    <div id="priceData">📉 Select a security to view statistics.</div>
-    <div id="descriptionData">ℹ️ Description will appear here.</div>
-    <div id="volatilityData">📊 Volatility: N/A</div>
-    <div id="changeData">📈 Change: N/A</div>
-  </div>
-
-  <div>
-    <input type="number" id="tradeQty" placeholder="Quantity" min="1" value="10">
-    <button id="buyButton">Buy</button>
-    <button id="sellButton">Sell</button>
-  </div>
-
-  <div id="portfolioPanel">
-    <strong>Portfolio</strong>
-    <ul id="portfolioList"><li>None owned</li></ul>
-    <div><strong>Marks:</strong> <span id="goldDisplay">1000</span></div>
-  </div>
-
-  <div id="newsTicker">📰 Market news will appear here</div>
-  <div id="eventArchive"><em>Waiting for trades...</em></div>
-  <div id="npcPanel"><strong>NPC Activity:</strong><ul id="npcLog"></ul></div>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="script.js"></script>
-  <script src="script.js"></script>
 </body>
 </html>
