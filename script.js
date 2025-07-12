@@ -2,7 +2,7 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   try {
-    let gold = 9000;
+    let gold = 1000;
     const portfolio = {};
     const securities = generateSecurities();
     let selected = null;
@@ -27,9 +27,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const npcLog = document.getElementById("npcLog");
     const archive = document.getElementById("eventArchive");
     const detailsPanel = document.getElementById("detailsPanel");
+    const tradeQtyInput = document.getElementById("tradeQty");
 
-    if (!dropdown || !goldDisplay || !newsTicker || !portfolioList || !npcLog || !archive || !detailsPanel) {
-      throw new Error("Critical UI element missing. Please check HTML structure.");
+    if (!dropdown || !goldDisplay || !newsTicker || !portfolioList || !npcLog || !archive || !detailsPanel || !tradeQtyInput) {
+      throw new Error("Critical UI element missing. Please check HTML structure. Ensure that an element with id 'detailsPanel' and 'tradeQty' exists in the HTML.");
     }
 
     const grouped = {};
@@ -52,7 +53,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     dropdown.addEventListener("change", () => {
       selected = securities.find(s => s.code === dropdown.value);
-      if (!selected) return;
+      if (!selected) {
+        console.warn("Selected security not found.");
+        return;
+      }
       updateStats(selected);
       drawChart(selected);
       updateDetailsPage(selected);
@@ -85,8 +89,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function drawChart(security) {
-      const ctx = document.getElementById("priceChart").getContext("2d");
-      if (!ctx) return console.error("Chart canvas context not found.");
+      const chartCanvas = document.getElementById("priceChart");
+      if (!chartCanvas || !chartCanvas.getContext) return console.error("Chart canvas context not found.");
+      const ctx = chartCanvas.getContext("2d");
       if (priceChart) priceChart.destroy();
 
       const history = generatePriceHistory(security.price, security.volatility);
@@ -105,10 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
         options: {
           responsive: true,
           plugins: { legend: { display: true } },
-          scales: {
-            x: { display: true },
-            y: { beginAtZero: false }
-          }
+          scales: { x: { display: true }, y: { beginAtZero: false } }
         }
       });
     }
@@ -137,7 +139,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function trade(type) {
       if (!selected) return alert("Please select a security.");
-      const qty = parseInt(document.getElementById("tradeQty").value);
+      const qty = parseInt(tradeQtyInput.value);
       if (isNaN(qty) || qty <= 0) return alert("Invalid quantity.");
 
       const total = qty * selected.price;
@@ -169,6 +171,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       for (const code in portfolio) {
         const sec = securities.find(s => s.code === code);
+        if (!sec) continue;
         const val = sec.price * portfolio[code];
         const li = document.createElement("li");
         li.textContent = `${code}: ${portfolio[code]} units (≈ ${val.toFixed(2)} Marks)`;
@@ -184,6 +187,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function simulateNPC() {
+      if (!newsTicker || !npcLog || !securities || securities.length === 0) return;
       const npc = npcNames[Math.floor(Math.random() * npcNames.length)];
       const target = securities[Math.floor(Math.random() * securities.length)];
       const qty = Math.floor(Math.random() * 20 + 1);
@@ -204,7 +208,11 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    setInterval(simulateNPC, 15000);
+    setInterval(() => {
+      if (document.readyState === "complete") {
+        simulateNPC();
+      }
+    }, 15000);
 
   } catch (err) {
     console.error("Script Error:", err);
