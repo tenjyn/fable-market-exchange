@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const securities = generateSecurities();
     let selected = null;
     let priceChart = null;
+    const newsQueue = [];
     const npcNames = [
       "Royal Frog Bank",
       "TLBN: Respectable Moneylenders",
@@ -53,10 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     dropdown.addEventListener("change", () => {
       selected = securities.find(s => s.code === dropdown.value);
-      if (!selected) {
-        console.warn("Selected security not found.");
-        return;
-      }
+      if (!selected) return;
       updateStats(selected);
       drawChart(selected);
       updateDetailsPage(selected);
@@ -123,6 +121,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <p><strong>Volatility:</strong> ${security.volatility}</p>
         <p><strong>Current Price:</strong> ${security.price.toFixed(2)} Marks</p>
         <p><strong>NPC Trading Activity:</strong> check the archive below for updates.</p>
+        <p><strong>Notes:</strong> This security has exhibited ${security.volatility < 0.03 ? 'low' : security.volatility < 0.06 ? 'moderate' : 'high'} volatility trends in the last cycle.</p>
       `;
     }
 
@@ -171,7 +170,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       for (const code in portfolio) {
         const sec = securities.find(s => s.code === code);
-        if (!sec) continue;
         const val = sec.price * portfolio[code];
         const li = document.createElement("li");
         li.textContent = `${code}: ${portfolio[code]} units (≈ ${val.toFixed(2)} Marks)`;
@@ -184,6 +182,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const entry = document.createElement("div");
       entry.textContent = `[${time}] ${message}`;
       archive.prepend(entry);
+      newsQueue.push(entry.textContent);
     }
 
     function simulateNPC() {
@@ -196,7 +195,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const item = document.createElement("li");
       item.textContent = msg;
       npcLog.prepend(item);
-      newsTicker.textContent = `${npc} ${action} ${qty} ${target.code}`;
+      newsQueue.push(msg);
 
       if (Math.random() < 0.02) {
         const boomOrBust = Math.random() < 0.5 ? "💥 Magic Surge!" : "📉 Crash!";
@@ -208,9 +207,17 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
+    function rotateNewsTicker() {
+      if (newsQueue.length > 0) {
+        const next = newsQueue.shift();
+        newsTicker.textContent = next;
+      }
+    }
+
     setInterval(() => {
       if (document.readyState === "complete") {
         simulateNPC();
+        rotateNewsTicker();
       }
     }, 15000);
 
