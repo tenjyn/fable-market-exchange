@@ -2,7 +2,7 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   try {
-    let gold = 1000;
+    let gold = 9000;
     const portfolio = {};
     const securities = generateSecurities();
     let selected = null;
@@ -26,12 +26,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const portfolioList = document.getElementById("portfolioList");
     const npcLog = document.getElementById("npcLog");
     const archive = document.getElementById("eventArchive");
+    const detailsPanel = document.getElementById("detailsPanel");
 
-    if (!dropdown || !goldDisplay || !newsTicker || !portfolioList || !npcLog || !archive) {
+    if (!dropdown || !goldDisplay || !newsTicker || !portfolioList || !npcLog || !archive || !detailsPanel) {
       throw new Error("Critical UI element missing. Please check HTML structure.");
     }
 
-    // Populate dropdown grouped by sector
     const grouped = {};
     securities.forEach(sec => {
       if (!grouped[sec.sector]) grouped[sec.sector] = [];
@@ -55,6 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!selected) return;
       updateStats(selected);
       drawChart(selected);
+      updateDetailsPage(selected);
     });
 
     document.getElementById("buyButton").addEventListener("click", () => trade("buy"));
@@ -92,9 +93,9 @@ document.addEventListener("DOMContentLoaded", () => {
       priceChart = new Chart(ctx, {
         type: "line",
         data: {
-          labels: history.map((_, i) => `T-${history.length - i}`),
+          labels: history.map((_, i) => `Day ${i + 1}`),
           datasets: [{
-            label: security.code,
+            label: `${security.code} Price History`,
             data: history,
             borderColor: "#7ad9ff",
             backgroundColor: "rgba(122, 217, 255, 0.1)",
@@ -103,19 +104,30 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         options: {
           responsive: true,
-          plugins: { legend: { display: false } },
+          plugins: { legend: { display: true } },
           scales: {
-            x: { display: false },
+            x: { display: true },
             y: { beginAtZero: false }
           }
         }
       });
     }
 
+    function updateDetailsPage(security) {
+      detailsPanel.innerHTML = `
+        <h3>${security.name} (${security.code})</h3>
+        <p><strong>Sector:</strong> ${security.sector}</p>
+        <p><strong>Description:</strong> ${security.desc}</p>
+        <p><strong>Volatility:</strong> ${security.volatility}</p>
+        <p><strong>Current Price:</strong> ${security.price.toFixed(2)} Marks</p>
+        <p><strong>NPC Trading Activity:</strong> check the archive below for updates.</p>
+      `;
+    }
+
     function generatePriceHistory(base, vol) {
       const history = [];
       let current = base;
-      for (let i = 0; i < 30; i++) {
+      for (let i = 0; i < 90; i++) {
         const change = current * (Math.random() * vol * 2 - vol);
         current = Math.max(1, current + change);
         history.push(current.toFixed(2));
@@ -182,7 +194,6 @@ document.addEventListener("DOMContentLoaded", () => {
       npcLog.prepend(item);
       newsTicker.textContent = `${npc} ${action} ${qty} ${target.code}`;
 
-      // Rare magical events or market crashes
       if (Math.random() < 0.02) {
         const boomOrBust = Math.random() < 0.5 ? "💥 Magic Surge!" : "📉 Crash!";
         const factor = boomOrBust.includes("Surge") ? 1.25 : 0.75;
