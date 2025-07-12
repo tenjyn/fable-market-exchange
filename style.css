@@ -1,63 +1,75 @@
 /* details.css */
+
 body {
-  background-color: #0e0e0e;
-  color: #f0f0f0;
-  font-family: 'Segoe UI', sans-serif;
   margin: 0;
-  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #121212;
+  color: #f1f1f1;
 }
 
-.container {
-  max-width: 960px;
-  margin: auto;
+#container {
   padding: 20px;
 }
 
 header {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   margin-bottom: 20px;
 }
 
-#newsTicker {
-  background-color: #1a1a1a;
+#newsTickerWrapper {
+  width: 100%;
+  background-color: #1e1e1e;
+  color: #00ffc8;
   padding: 10px;
-  font-size: 1.1em;
-  border-left: 5px solid #ffc107;
-  margin-top: 10px;
-  white-space: nowrap;
+  font-size: 16px;
   overflow: hidden;
-  animation: scrollTicker 25s linear infinite;
+  white-space: nowrap;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.4);
 }
 
-@keyframes scrollTicker {
-  from { transform: translateX(100%); }
-  to { transform: translateX(-100%); }
+main {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
 }
 
-.security-info, .npc-activity {
-  background: #1c1c1c;
-  border-radius: 8px;
+#securityInfo p {
+  margin: 5px 0;
+  font-size: 16px;
+}
+
+#chartSection {
+  background-color: #1e1e1e;
   padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
-}
-
-.security-info ul {
-  list-style: none;
-  padding: 0;
-}
-
-.security-info li {
-  margin-bottom: 10px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,255,200,0.2);
 }
 
 canvas {
-  margin-top: 20px;
+  max-width: 100%;
 }
 
-footer {
-  text-align: center;
-  padding: 10px;
-  font-size: 0.9em;
-  color: #aaa;
+#recentActivity {
+  background-color: #1e1e1e;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 0 5px rgba(255,255,255,0.1);
+}
+
+#recentActivity h2 {
+  margin-top: 0;
+  color: #7ad9ff;
+}
+
+#npcActivityLog {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+#npcActivityLog li {
+  margin-bottom: 8px;
+  border-bottom: 1px solid #2e2e2e;
+  padding-bottom: 4px;
 }
