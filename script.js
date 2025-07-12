@@ -31,12 +31,24 @@ if (!dropdown || !goldDisplay || !newsTicker || !portfolioList || !npcLog) {
   throw new Error("Critical UI element missing. Please check HTML structure.");
 }
 
+// Populate dropdown grouped by sector
+const grouped = {};
 securities.forEach(sec => {
-  const option = document.createElement("option");
-  option.value = sec.code;
-  option.textContent = `${sec.code} - ${sec.name}`;
-  dropdown.appendChild(option);
+  if (!grouped[sec.sector]) grouped[sec.sector] = [];
+  grouped[sec.sector].push(sec);
 });
+
+for (const sector in grouped) {
+  const optgroup = document.createElement("optgroup");
+  optgroup.label = sector;
+  grouped[sector].forEach(sec => {
+    const option = document.createElement("option");
+    option.value = sec.code;
+    option.textContent = `${sec.code} - ${sec.name}`;
+    optgroup.appendChild(option);
+  });
+  dropdown.appendChild(optgroup);
+}
 
 dropdown.addEventListener("change", () => {
   selected = securities.find(s => s.code === dropdown.value);
@@ -170,6 +182,16 @@ function simulateNPC() {
   item.textContent = msg;
   npcLog.prepend(item);
   newsTicker.textContent = `${npc} ${action} ${qty} ${target.code}`;
+
+  // Rare magical events or market crashes
+  if (Math.random() < 0.02) {
+    const boomOrBust = Math.random() < 0.5 ? "💥 Magic Surge!" : "📉 Crash!";
+    const factor = boomOrBust.includes("Surge") ? 1.25 : 0.75;
+    target.price *= factor;
+    logEvent(`${boomOrBust} ${target.code} adjusted to ${target.price.toFixed(2)} Marks.`);
+    updateStats(target);
+    if (selected?.code === target.code) drawChart(target);
+  }
 }
 
 setInterval(simulateNPC, 15000);
