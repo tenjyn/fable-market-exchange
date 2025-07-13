@@ -3,39 +3,61 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Security Details - Fable Markets</title>
-  <link rel="stylesheet" href="details.css" />
+  <title>Fable Markets Exchange</title>
+  <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <div id="container">
+  <div id="mainContainer">
     <header>
-      <h1 id="securityTitle">Security Details</h1>
-      <div id="newsTickerWrapper">
-        <span id="newsTicker">Loading market news...</span>
-      </div>
+      <h1>Fable Markets Exchange</h1>
+      <div class="gold-display">Marks: <span id="goldDisplay">1000</span></div>
     </header>
 
-    <main>
-      <section id="securityInfo">
-        <p><strong>Sector:</strong> <span id="sector"></span></p>
-        <p><strong>Description:</strong> <span id="description"></span></p>
-        <p><strong>Volatility:</strong> <span id="volatility"></span></p>
-        <p><strong>Current Price:</strong> <span id="currentPrice"></span> Marks</p>
-      </section>
+    <section id="tradeInterface">
+      <label for="productDropdown">Select Security:</label>
+      <select id="productDropdown">
+        <option disabled selected value>Select...</option>
+      </select>
 
-      <section id="chartSection">
-        <canvas id="historyChart" width="800" height="400"></canvas>
-      </section>
+      <div class="stat-panel">
+        <p id="priceData"></p>
+        <p id="descriptionData"></p>
+        <p id="volatilityData"></p>
+      </div>
 
-      <section id="recentActivity">
-        <h2>Recent NPC Activity</h2>
-        <ul id="npcActivityLog"></ul>
-      </section>
-    </main>
+      <input type="number" id="tradeQty" min="1" placeholder="Quantity" />
+      <button id="buyButton">Buy</button>
+      <button id="sellButton">Sell</button>
+
+      <div id="priceChartContainer">
+        <canvas id="priceChart"></canvas>
+      </div>
+
+      <div id="detailsPanel"></div>
+    </section>
+
+    <section id="portfolio">
+      <h2>Portfolio</h2>
+      <ul id="portfolioList"></ul>
+    </section>
+
+    <section id="marketNews">
+      <h2>Market News</h2>
+      <div id="newsTicker">Awaiting market updates...</div>
+    </section>
+
+    <section id="npcSection">
+      <h2>NPC Trades</h2>
+      <ul id="npcLog"></ul>
+    </section>
+
+    <section id="archive">
+      <h2>Market Archive</h2>
+      <div id="eventArchive"></div>
+    </section>
   </div>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="script.js"></script>
-  <script src="details.js"></script>
+
+  <script src="script.js"></script>
 </body>
 </html>
