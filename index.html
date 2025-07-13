@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fable Markets Exchange</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -21,17 +21,17 @@
       </select>
 
       <div class="stat-panel">
-        <p id="priceData"></p>
-        <p id="descriptionData"></p>
-        <p id="volatilityData"></p>
+        <p id="priceData">Current Price: —</p>
+        <p id="descriptionData">Description: —</p>
+        <p id="volatilityData">Volatility: —</p>
       </div>
 
-      <input type="number" id="tradeQty" min="1" placeholder="Quantity" />
+      <input type="number" id="tradeQty" min="1" placeholder="Quantity">
       <button id="buyButton">Buy</button>
       <button id="sellButton">Sell</button>
 
       <div id="priceChartContainer">
-        <canvas id="priceChart"></canvas>
+        <canvas id="priceChart" width="600" height="300"></canvas>
       </div>
 
       <div id="detailsPanel"></div>
@@ -39,7 +39,9 @@
 
     <section id="portfolio">
       <h2>Portfolio</h2>
-      <ul id="portfolioList"></ul>
+      <ul id="portfolioList">
+        <li>None owned</li>
+      </ul>
     </section>
 
     <section id="marketNews">
