@@ -3,6 +3,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   const urlParams = new URLSearchParams(window.location.search);
   const code = urlParams.get("code");
+
   if (!code) return;
 
   const security = getSecurityDetails(code);
@@ -18,7 +19,7 @@ function getSecurityDetails(code) {
     { code: "WHT", name: "Wheat Futures", price: 120, desc: "Grain commodity.", sector: "Grain", volatility: 0.03 },
     { code: "OBL", name: "Oswald Bonds", price: 200, desc: "Infrastructure bond.", sector: "Infrastructure", volatility: 0.02 },
     { code: "FMR", name: "Fae Mirror Shards", price: 350, desc: "Luxury magical good.", sector: "Magical", volatility: 0.08 },
-    // Add others as needed
+    // Add more as needed
   ];
   return securities.find(s => s.code === code);
 }
@@ -32,9 +33,7 @@ function renderDetails(security) {
 }
 
 function drawSecurityChart(security) {
-  const ctx = document.getElementById("historyChart")?.getContext("2d");
-  if (!ctx) return;
-
+  const ctx = document.getElementById("historyChart").getContext("2d");
   const history = generateHistory(security.price, security.volatility);
   new Chart(ctx, {
     type: "line",
@@ -69,8 +68,7 @@ function generateHistory(start, vol) {
 
 function simulateNPCNews(security) {
   const npcs = ["Oswald Bank", "Royal Frog Bank", "Glimmer Consortium", "TLBN"];
-  const log = document.getElementById("npcTradeLog");
-  if (!log) return;
+  const log = document.getElementById("npcActivityLog");
 
   function postFakeTrade() {
     const npc = npcs[Math.floor(Math.random() * npcs.length)];
@@ -81,9 +79,7 @@ function simulateNPCNews(security) {
     const li = document.createElement("li");
     li.textContent = msg;
     log.prepend(li);
-
-    const ticker = document.getElementById("newsTicker");
-    if (ticker) ticker.textContent = msg;
+    document.getElementById("newsTicker").textContent = msg;
   }
 
   setInterval(postFakeTrade, 15000);
