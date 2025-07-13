@@ -3,7 +3,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   const urlParams = new URLSearchParams(window.location.search);
   const code = urlParams.get("code");
-
   if (!code) return;
 
   const security = getSecurityDetails(code);
@@ -26,14 +25,16 @@ function getSecurityDetails(code) {
 
 function renderDetails(security) {
   document.getElementById("securityTitle").textContent = `${security.name} (${security.code})`;
-  document.getElementById("securityDesc").textContent = security.desc;
-  document.getElementById("securitySector").textContent = `Sector: ${security.sector}`;
-  document.getElementById("securityVolatility").textContent = `Volatility: ${security.volatility}`;
-  document.getElementById("securityPrice").textContent = `Current Price: ${security.price.toFixed(2)} Marks`;
+  document.getElementById("description").textContent = security.desc;
+  document.getElementById("sector").textContent = security.sector;
+  document.getElementById("volatility").textContent = security.volatility;
+  document.getElementById("currentPrice").textContent = security.price.toFixed(2);
 }
 
 function drawSecurityChart(security) {
-  const ctx = document.getElementById("securityChart").getContext("2d");
+  const ctx = document.getElementById("historyChart")?.getContext("2d");
+  if (!ctx) return;
+
   const history = generateHistory(security.price, security.volatility);
   new Chart(ctx, {
     type: "line",
@@ -68,7 +69,8 @@ function generateHistory(start, vol) {
 
 function simulateNPCNews(security) {
   const npcs = ["Oswald Bank", "Royal Frog Bank", "Glimmer Consortium", "TLBN"];
-  const log = document.getElementById("npcActivityLog");
+  const log = document.getElementById("npcTradeLog");
+  if (!log) return;
 
   function postFakeTrade() {
     const npc = npcs[Math.floor(Math.random() * npcs.length)];
@@ -79,7 +81,9 @@ function simulateNPCNews(security) {
     const li = document.createElement("li");
     li.textContent = msg;
     log.prepend(li);
-    document.getElementById("tickerText").textContent = msg;
+
+    const ticker = document.getElementById("newsTicker");
+    if (ticker) ticker.textContent = msg;
   }
 
   setInterval(postFakeTrade, 15000);
