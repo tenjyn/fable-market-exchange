@@ -1,48 +1,24 @@
-/* details.css */
+/* style.css */
 
 body {
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #121212 !important;
+  background-color: #121212;
   color: #f1f1f1;
 }
 
 #mainContainer {
-  max-width: 1000px;
-  margin: 0 auto;
   padding: 20px;
+  max-width: 1200px;
+  margin: auto;
 }
 
 header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  text-align: center;
   margin-bottom: 20px;
 }
 
-h1 {
-  font-size: 28px;
-  font-weight: 600;
-  margin-bottom: 10px;
-}
-
-label {
-  display: inline-block;
-  margin-top: 10px;
-  font-weight: bold;
-}
-
-section {
-  background-color: #1e1e1e;
-  margin-bottom: 20px;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 0 5px rgba(0,0,0,0.3);
-}
-
-#newsTickerWrapper,
-#newsTicker {
-  width: 100%;
+#newsTickerWrapper {
   background-color: #1e1e1e;
   color: #00ffc8;
   padding: 10px;
@@ -50,101 +26,67 @@ section {
   overflow: hidden;
   white-space: nowrap;
   box-shadow: 0 2px 5px rgba(0,0,0,0.4);
-  margin-bottom: 20px;
+  margin-top: 10px;
 }
 
-main,
-#tradeInterface {
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
+section {
   margin-bottom: 30px;
-}
-
-.stat-panel p,
-#securityInfo p {
-  margin: 5px 0;
-  font-size: 16px;
-}
-
-#priceChartContainer,
-#chartSection {
   background-color: #1e1e1e;
-  padding: 20px;
+  padding: 15px;
   border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0,255,200,0.2);
-  margin-top: 20px;
+  box-shadow: 0 0 8px rgba(0, 255, 200, 0.05);
+}
+
+.stat-panel p {
+  margin: 5px 0;
+  font-size: 15px;
+}
+
+#priceChartContainer {
+  padding: 20px;
 }
 
 canvas {
   max-width: 100%;
-}
-
-#recentActivity,
-#portfolio,
-#npcSection {
-  background-color: #1e1e1e;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 0 5px rgba(255,255,255,0.1);
-  margin-bottom: 20px;
-}
-
-#recentActivity h2,
-#portfolio h2,
-#npcSection h2 {
-  margin-top: 0;
-  color: #7ad9ff;
-}
-
-#npcActivityLog,
-#portfolioList,
-#npcLog {
-  list-style-type: none;
-  padding-left: 0;
-}
-
-#npcActivityLog li,
-#portfolioList li,
-#npcLog li {
-  margin-bottom: 8px;
-  border-bottom: 1px solid #2e2e2e;
-  padding-bottom: 4px;
-}
-
-/* FORM ELEMENTS */
-select,
-input[type="number"] {
-  padding: 6px;
-  margin: 5px 10px 5px 0;
-  background-color: #1e1e1e;
-  color: #f1f1f1;
-  border: 1px solid #444;
+  background: #101010;
   border-radius: 4px;
-  width: 200px;
-  display: inline-block;
+}
+
+input, select, button {
+  margin: 5px 0;
+  padding: 6px;
+  font-size: 14px;
+  border-radius: 4px;
+  border: none;
 }
 
 button {
-  padding: 6px 12px;
-  margin-right: 10px;
   background-color: #00ffc8;
   color: #121212;
-  border: none;
-  border-radius: 4px;
   cursor: pointer;
 }
 
 button:hover {
-  background-color: #7ad9ff;
+  background-color: #00cba0;
 }
 
 ul {
-  list-style-type: disc;
-  margin-left: 20px;
+  list-style-type: none;
+  padding-left: 0;
 }
 
-hr {
-  border: none;
-  border-top: 1px solid #333;
+#portfolioList li,
+#npcLog li {
+  border-bottom: 1px solid #333;
+  padding: 4px 0;
+}
+
+#npcProfileOutput {
+  white-space: pre-wrap;
+  background-color: #151515;
+  padding: 10px;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: #7ad9ff;
+  font-family: monospace;
 }
