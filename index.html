@@ -1,63 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fable Markets Exchange</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fable Commodities Exchange</title>
+  <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <div id="mainContainer">
     <header>
-      <h1>Fable Markets Exchange</h1>
-      <div class="gold-display">Marks: <span id="goldDisplay">1000</span></div>
+      <h1>Fable Commodities Exchange</h1>
+      <div id="newsTickerWrapper">
+        <div id="newsTicker">Welcome to the Exchange</div>
+      </div>
     </header>
 
     <section id="tradeInterface">
-      <label for="productDropdown">Select Security:</label>
-      <select id="productDropdown">
-        <option disabled selected value>Select...</option>
-      </select>
+      <label for="productDropdown">Choose a Security:</label>
+      <select id="productDropdown"></select>
 
       <div class="stat-panel">
-        <p id="priceData">Current Price: —</p>
-        <p id="descriptionData">Description: —</p>
-        <p id="volatilityData">Volatility: —</p>
+        <p id="priceData"></p>
+        <p id="descriptionData"></p>
+        <p id="volatilityData"></p>
       </div>
 
-      <input type="number" id="tradeQty" min="1" placeholder="Quantity">
+      <label for="tradeQty">Quantity:</label>
+      <input type="number" id="tradeQty" min="1" />
       <button id="buyButton">Buy</button>
       <button id="sellButton">Sell</button>
-
-      <div id="priceChartContainer">
-        <canvas id="priceChart" width="600" height="300"></canvas>
-      </div>
-
-      <div id="detailsPanel"></div>
     </section>
 
     <section id="portfolio">
       <h2>Portfolio</h2>
-      <ul id="portfolioList">
-        <li>None owned</li>
-      </ul>
+      <p>Gold: <span id="goldDisplay">1000</span> Marks</p>
+      <ul id="portfolioList"></ul>
     </section>
 
-    <section id="marketNews">
-      <h2>Market News</h2>
-      <div id="newsTicker">Awaiting market updates...</div>
+    <section id="priceChartContainer">
+      <canvas id="priceChart"></canvas>
     </section>
 
     <section id="npcSection">
-      <h2>NPC Trades</h2>
+      <h2>NPC Activity</h2>
       <ul id="npcLog"></ul>
     </section>
 
-    <section id="archive">
+    <section id="npcProfileViewer">
+      <h2>NPC Profile Viewer</h2>
+      <select id="npcSelect">
+        <option>Select NPC</option>
+      </select>
+      <pre id="npcProfileOutput">Select an NPC to view profile.</pre>
+    </section>
+
+    <section id="recentActivity">
       <h2>Market Archive</h2>
       <div id="eventArchive"></div>
     </section>
+
+    <section id="detailsPanel"></section>
   </div>
 
   <script src="script.js"></script>
