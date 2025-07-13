@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let selected = null;
     let priceChart = null;
     const newsQueue = [];
+
     const npcNames = [
       "Royal Frog Bank",
       "TLBN: Respectable Moneylenders",
@@ -21,6 +22,11 @@ document.addEventListener("DOMContentLoaded", () => {
       "Magisterial Reserves of Lockhede"
     ];
 
+    const npcProfiles = {};
+    npcNames.forEach(name => {
+      npcProfiles[name] = { name, holdings: {}, tradeLog: [], totalPnL: 0 };
+    });
+
     const dropdown = document.getElementById("productDropdown");
     const goldDisplay = document.getElementById("goldDisplay");
     const newsTicker = document.getElementById("newsTicker");
@@ -29,10 +35,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const archive = document.getElementById("eventArchive");
     const detailsPanel = document.getElementById("detailsPanel");
     const tradeQtyInput = document.getElementById("tradeQty");
-
-    if (!dropdown || !goldDisplay || !newsTicker || !portfolioList || !npcLog || !archive || !detailsPanel || !tradeQtyInput) {
-      throw new Error("Critical UI element missing. Please check HTML structure. Ensure that an element with id 'detailsPanel' and 'tradeQty' exists in the HTML.");
-    }
+    const npcSelect = document.getElementById("npcSelect");
+    const npcProfileOutput = document.getElementById("npcProfileOutput");
 
     const grouped = {};
     securities.forEach(sec => {
@@ -51,6 +55,23 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       dropdown.appendChild(optgroup);
     }
+
+    npcNames.forEach(npc => {
+      const opt = document.createElement("option");
+      opt.value = npc;
+      opt.textContent = npc;
+      npcSelect.appendChild(opt);
+    });
+
+    npcSelect.addEventListener("change", () => {
+      const npc = npcProfiles[npcSelect.value];
+      if (!npc) return;
+      const profileText = `📊 ${npc.name}\n\nHoldings:\n` +
+        Object.entries(npc.holdings).map(([k, v]) => `• ${k}: ${v}`).join("\n") +
+        `\n\nTotal P/L: ${npc.totalPnL.toFixed(2)} Marks\n\nRecent Trades:\n` +
+        npc.tradeLog.slice(-5).join("\n");
+      npcProfileOutput.textContent = profileText;
+    });
 
     dropdown.addEventListener("change", () => {
       selected = securities.find(s => s.code === dropdown.value);
@@ -120,8 +141,6 @@ document.addEventListener("DOMContentLoaded", () => {
         <p><strong>Description:</strong> ${security.desc}</p>
         <p><strong>Volatility:</strong> ${security.volatility}</p>
         <p><strong>Current Price:</strong> ${security.price.toFixed(2)} Marks</p>
-        <p><strong>NPC Trading Activity:</strong> check the archive below for updates.</p>
-        <p><strong>Notes:</strong> This security has exhibited ${security.volatility < 0.03 ? 'low' : security.volatility < 0.06 ? 'moderate' : 'high'} volatility trends in the last cycle.</p>
       `;
     }
 
@@ -144,15 +163,19 @@ document.addEventListener("DOMContentLoaded", () => {
       const total = qty * selected.price;
       const key = selected.code;
 
+      if (!portfolio[key]) {
+        portfolio[key] = { qty: 0, costBasis: 0 };
+      }
+
       if (type === "buy" && gold >= total) {
         gold -= total;
-        if (!portfolio[key]) portfolio[key] = 0;
-        portfolio[key] += qty;
+        portfolio[key].qty += qty;
+        portfolio[key].costBasis += total;
         logEvent(`✅ Bought ${qty} ${key} for ${total.toFixed(2)} Marks`);
-      } else if (type === "sell" && portfolio[key] >= qty) {
+      } else if (type === "sell" && portfolio[key].qty >= qty) {
         gold += total;
-        portfolio[key] -= qty;
-        if (portfolio[key] === 0) delete portfolio[key];
+        portfolio[key].costBasis *= (portfolio[key].qty - qty) / portfolio[key].qty;
+        portfolio[key].qty -= qty;
         logEvent(`🪙 Sold ${qty} ${key} for ${total.toFixed(2)} Marks`);
       } else {
         logEvent(`⚠️ Trade failed: Check quantity or funds.`);
@@ -170,9 +193,12 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       for (const code in portfolio) {
         const sec = securities.find(s => s.code === code);
-        const val = sec.price * portfolio[code];
+        const secData = portfolio[code];
+        const currentVal = sec.price * secData.qty;
+        const gain = currentVal - secData.costBasis;
+        const gainPct = (gain / secData.costBasis) * 100;
         const li = document.createElement("li");
-        li.textContent = `${code}: ${portfolio[code]} units (≈ ${val.toFixed(2)} Marks)`;
+        li.textContent = `${code}: ${secData.qty} units (≈ ${currentVal.toFixed(2)} Marks, P/L: ${gain.toFixed(2)} Marks, ${gainPct.toFixed(2)}%)`;
         portfolioList.appendChild(li);
       }
     }
@@ -186,25 +212,29 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function simulateNPC() {
-      if (!newsTicker || !npcLog || !securities || securities.length === 0) return;
       const npc = npcNames[Math.floor(Math.random() * npcNames.length)];
       const target = securities[Math.floor(Math.random() * securities.length)];
       const qty = Math.floor(Math.random() * 20 + 1);
       const action = Math.random() < 0.5 ? "buy" : "sell";
+
+      const npcData = npcProfiles[npc];
+      if (!npcData.holdings[target.code]) npcData.holdings[target.code] = 0;
+
+      if (action === "buy") {
+        npcData.holdings[target.code] += qty;
+        npcData.totalPnL -= qty * target.price;
+      } else {
+        npcData.holdings[target.code] = Math.max(0, npcData.holdings[target.code] - qty);
+        npcData.totalPnL += qty * target.price;
+      }
+
       const msg = `🏦 ${npc} ${action}s ${qty} units of ${target.code}`;
+      npcData.tradeLog.push(msg);
+
       const item = document.createElement("li");
       item.textContent = msg;
       npcLog.prepend(item);
       newsQueue.push(msg);
-
-      if (Math.random() < 0.02) {
-        const boomOrBust = Math.random() < 0.5 ? "💥 Magic Surge!" : "📉 Crash!";
-        const factor = boomOrBust.includes("Surge") ? 1.25 : 0.75;
-        target.price *= factor;
-        logEvent(`${boomOrBust} ${target.code} adjusted to ${target.price.toFixed(2)} Marks.`);
-        updateStats(target);
-        if (selected?.code === target.code) drawChart(target);
-      }
     }
 
     function rotateNewsTicker() {
