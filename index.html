@@ -32,35 +32,40 @@
       <button id="sellButton">Sell</button>
     </section>
 
-    <section id="portfolio">
-      <h2>Portfolio</h2>
-      <p>Gold: <span id="goldDisplay">1000</span> Marks</p>
+    <section id="portfolioPanel">
+      <h2>Your Portfolio</h2>
+      <p>Marks: <span id="goldDisplay">₥1000.00</span> (₥1 ≈ $100 USD)</p>
       <ul id="portfolioList"></ul>
     </section>
 
-    <section id="priceChartContainer">
-      <canvas id="priceChart"></canvas>
-    </section>
-
-    <section id="npcSection">
-      <h2>NPC Activity</h2>
-      <ul id="npcLog"></ul>
-    </section>
-
-    <section id="npcProfileViewer">
-      <h2>NPC Profile Viewer</h2>
-      <select id="npcSelect">
-        <option>Select NPC</option>
-      </select>
-      <pre id="npcProfileOutput">Select an NPC to view profile.</pre>
+    <section id="topStories">
+      <h2>Top Stories</h2>
+      <!-- Top stories will populate here -->
     </section>
 
     <section id="recentActivity">
-      <h2>Market Archive</h2>
+      <h2>News Archive</h2>
+      <label for="newsFilter">Filter:</label>
+      <select id="newsFilter">
+        <option value="all">All</option>
+        <option value="trades">Trades</option>
+        <option value="surges">Surges</option>
+        <option value="crashes">Crashes</option>
+      </select>
+      <button onclick="resetNews()">Reset Archive</button>
       <div id="eventArchive"></div>
     </section>
 
-    <section id="detailsPanel"></section>
+    <section id="npcSection">
+      <h2>NPC Profiles</h2>
+      <select id="npcSelect"></select>
+      <div id="npcProfileOutput"></div>
+    </section>
+
+    <canvas id="priceChart"></canvas>
+    <div id="detailsPanel"></div>
+
+    <ul id="npcLog"></ul>
   </div>
 
   <script src="script.js"></script>
