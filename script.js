@@ -2,13 +2,12 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   try {
-    let gold = 1000;
+    let marks = 1000;
     const portfolio = {};
     const securities = generateSecurities();
     let selected = null;
     let priceChart = null;
     const newsQueue = [];
-
     const npcNames = [
       "Royal Frog Bank",
       "TLBN: Respectable Moneylenders",
@@ -22,13 +21,8 @@ document.addEventListener("DOMContentLoaded", () => {
       "Magisterial Reserves of Lockhede"
     ];
 
-    const npcProfiles = {};
-    npcNames.forEach(name => {
-      npcProfiles[name] = { name, holdings: {}, tradeLog: [], totalPnL: 0 };
-    });
-
     const dropdown = document.getElementById("productDropdown");
-    const goldDisplay = document.getElementById("goldDisplay");
+    const marksDisplay = document.getElementById("goldDisplay");
     const newsTicker = document.getElementById("newsTicker");
     const portfolioList = document.getElementById("portfolioList");
     const npcLog = document.getElementById("npcLog");
@@ -37,6 +31,30 @@ document.addEventListener("DOMContentLoaded", () => {
     const tradeQtyInput = document.getElementById("tradeQty");
     const npcSelect = document.getElementById("npcSelect");
     const npcProfileOutput = document.getElementById("npcProfileOutput");
+
+    const portfolioControls = document.createElement("div");
+    portfolioControls.innerHTML = `
+      <button id="resetPortfolioBtn">Reset Portfolio</button>
+      <button id="exportPortfolioBtn">Export Portfolio</button>
+      <pre id="exportOutput" style="background:#1e1e1e;padding:10px;border:1px solid #333;margin-top:10px;white-space:pre-wrap;"></pre>
+      <p style="font-size: 12px; opacity: 0.7;">Note: 1 mark (₥1) ≈ $100 USD</p>
+    `;
+    document.body.appendChild(portfolioControls);
+
+    document.getElementById("resetPortfolioBtn").addEventListener("click", resetPortfolio);
+    document.getElementById("exportPortfolioBtn").addEventListener("click", () => {
+      const data = {
+        marks,
+        portfolio
+      };
+      document.getElementById("exportOutput").textContent = JSON.stringify(data, null, 2);
+    });
+
+    if (!dropdown || !marksDisplay || !newsTicker || !portfolioList || !npcLog || !archive || !detailsPanel || !tradeQtyInput) {
+      throw new Error("Critical UI element missing. Please check HTML structure. Ensure that an element with id 'detailsPanel' and 'tradeQty' exists in the HTML.");
+    }
+
+    loadPortfolio();
 
     const grouped = {};
     securities.forEach(sec => {
@@ -56,23 +74,6 @@ document.addEventListener("DOMContentLoaded", () => {
       dropdown.appendChild(optgroup);
     }
 
-    npcNames.forEach(npc => {
-      const opt = document.createElement("option");
-      opt.value = npc;
-      opt.textContent = npc;
-      npcSelect.appendChild(opt);
-    });
-
-    npcSelect.addEventListener("change", () => {
-      const npc = npcProfiles[npcSelect.value];
-      if (!npc) return;
-      const profileText = `📊 ${npc.name}\n\nHoldings:\n` +
-        Object.entries(npc.holdings).map(([k, v]) => `• ${k}: ${v}`).join("\n") +
-        `\n\nTotal P/L: ${npc.totalPnL.toFixed(2)} Marks\n\nRecent Trades:\n` +
-        npc.tradeLog.slice(-5).join("\n");
-      npcProfileOutput.textContent = profileText;
-    });
-
     dropdown.addEventListener("change", () => {
       selected = securities.find(s => s.code === dropdown.value);
       if (!selected) return;
@@ -83,6 +84,34 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById("buyButton").addEventListener("click", () => trade("buy"));
     document.getElementById("sellButton").addEventListener("click", () => trade("sell"));
+
+    function savePortfolio() {
+      const data = {
+        marks,
+        portfolio
+      };
+      localStorage.setItem("fablePortfolio", JSON.stringify(data));
+    }
+
+    function loadPortfolio() {
+      const saved = localStorage.getItem("fablePortfolio");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        marks = parsed.marks || 1000;
+        for (const key in parsed.portfolio) {
+          portfolio[key] = parsed.portfolio[key];
+        }
+      }
+    }
+
+    function resetPortfolio() {
+      localStorage.removeItem("fablePortfolio");
+      location.reload();
+    }
+
+    function formatMarks(amount) {
+      return `₥${Number(amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
 
     function generateSecurities() {
       return [
@@ -101,10 +130,57 @@ document.addEventListener("DOMContentLoaded", () => {
       ];
     }
 
-    function updateStats(security) {
-      document.getElementById("priceData").textContent = `Current Price: ${security.price.toFixed(2)} Marks`;
-      document.getElementById("descriptionData").textContent = security.desc;
-      document.getElementById("volatilityData").textContent = `Volatility: ${security.volatility}`;
+    function updatePortfolio() {
+      marksDisplay.textContent = formatMarks(marks);
+      portfolioList.innerHTML = "";
+      if (Object.keys(portfolio).length === 0) {
+        portfolioList.innerHTML = "<li>None owned</li>";
+        return;
+      }
+      for (const code in portfolio) {
+        const sec = securities.find(s => s.code === code);
+        const val = sec.price * portfolio[code];
+        const li = document.createElement("li");
+        const costBasis = 100 * portfolio[code]; // placeholder: replace with actual avg buy price
+        const gain = val - costBasis;
+        li.style.color = gain > 0 ? "#00ff99" : gain < 0 ? "#ff6666" : "#cccccc";
+        li.textContent = `${code}: ${portfolio[code]} units (≈ ${formatMarks(val)}) | Gain: ${gain >= 0 ? '+' : ''}${formatMarks(gain)}`;
+        portfolioList.appendChild(li);
+      }
+    }
+
+    function trade(type) {
+      if (!selected) return alert("Please select a security.");
+      const qty = parseInt(tradeQtyInput.value);
+      if (isNaN(qty) || qty <= 0) return alert("Invalid quantity.");
+
+      const total = qty * selected.price;
+      const key = selected.code;
+
+      if (type === "buy" && marks >= total) {
+        marks -= total;
+        if (!portfolio[key]) portfolio[key] = 0;
+        portfolio[key] += qty;
+        logEvent(`✅ Bought ${qty} ${key} for ${formatMarks(total)}`);
+      } else if (type === "sell" && portfolio[key] >= qty) {
+        marks += total;
+        portfolio[key] -= qty;
+        if (portfolio[key] === 0) delete portfolio[key];
+        logEvent(`🪙 Sold ${qty} ${key} for ${formatMarks(total)}`);
+      } else {
+        logEvent(`⚠️ Trade failed: Check quantity or funds.`);
+      }
+
+      updatePortfolio();
+      savePortfolio();
+    }
+
+    function logEvent(message) {
+      const time = new Date().toLocaleTimeString();
+      const entry = document.createElement("div");
+      entry.textContent = `[${time}] ${message}`;
+      archive.prepend(entry);
+      newsQueue.push(entry.textContent);
     }
 
     function drawChart(security) {
@@ -132,116 +208,6 @@ document.addEventListener("DOMContentLoaded", () => {
           scales: { x: { display: true }, y: { beginAtZero: false } }
         }
       });
-    }
-
-    function updateDetailsPage(security) {
-      detailsPanel.innerHTML = `
-        <h3>${security.name} (${security.code})</h3>
-        <p><strong>Sector:</strong> ${security.sector}</p>
-        <p><strong>Description:</strong> ${security.desc}</p>
-        <p><strong>Volatility:</strong> ${security.volatility}</p>
-        <p><strong>Current Price:</strong> ${security.price.toFixed(2)} Marks</p>
-      `;
-    }
-
-    function generatePriceHistory(base, vol) {
-      const history = [];
-      let current = base;
-      for (let i = 0; i < 90; i++) {
-        const change = current * (Math.random() * vol * 2 - vol);
-        current = Math.max(1, current + change);
-        history.push(current.toFixed(2));
-      }
-      return history;
-    }
-
-    function trade(type) {
-      if (!selected) return alert("Please select a security.");
-      const qty = parseInt(tradeQtyInput.value);
-      if (isNaN(qty) || qty <= 0) return alert("Invalid quantity.");
-
-      const total = qty * selected.price;
-      const key = selected.code;
-
-      if (!portfolio[key]) {
-        portfolio[key] = { qty: 0, costBasis: 0 };
-      }
-
-      if (type === "buy" && gold >= total) {
-        gold -= total;
-        portfolio[key].qty += qty;
-        portfolio[key].costBasis += total;
-        logEvent(`✅ Bought ${qty} ${key} for ${total.toFixed(2)} Marks`);
-      } else if (type === "sell" && portfolio[key].qty >= qty) {
-        gold += total;
-        portfolio[key].costBasis *= (portfolio[key].qty - qty) / portfolio[key].qty;
-        portfolio[key].qty -= qty;
-        logEvent(`🪙 Sold ${qty} ${key} for ${total.toFixed(2)} Marks`);
-      } else {
-        logEvent(`⚠️ Trade failed: Check quantity or funds.`);
-      }
-
-      updatePortfolio();
-    }
-
-    function updatePortfolio() {
-      goldDisplay.textContent = gold.toFixed(2);
-      portfolioList.innerHTML = "";
-      if (Object.keys(portfolio).length === 0) {
-        portfolioList.innerHTML = "<li>None owned</li>";
-        return;
-      }
-      for (const code in portfolio) {
-        const sec = securities.find(s => s.code === code);
-        const secData = portfolio[code];
-        const currentVal = sec.price * secData.qty;
-        const gain = currentVal - secData.costBasis;
-        const gainPct = (gain / secData.costBasis) * 100;
-        const li = document.createElement("li");
-        li.textContent = `${code}: ${secData.qty} units (≈ ${currentVal.toFixed(2)} Marks, P/L: ${gain.toFixed(2)} Marks, ${gainPct.toFixed(2)}%)`;
-        portfolioList.appendChild(li);
-      }
-    }
-
-    function logEvent(message) {
-      const time = new Date().toLocaleTimeString();
-      const entry = document.createElement("div");
-      entry.textContent = `[${time}] ${message}`;
-      archive.prepend(entry);
-      newsQueue.push(entry.textContent);
-    }
-
-    function simulateNPC() {
-      const npc = npcNames[Math.floor(Math.random() * npcNames.length)];
-      const target = securities[Math.floor(Math.random() * securities.length)];
-      const qty = Math.floor(Math.random() * 20 + 1);
-      const action = Math.random() < 0.5 ? "buy" : "sell";
-
-      const npcData = npcProfiles[npc];
-      if (!npcData.holdings[target.code]) npcData.holdings[target.code] = 0;
-
-      if (action === "buy") {
-        npcData.holdings[target.code] += qty;
-        npcData.totalPnL -= qty * target.price;
-      } else {
-        npcData.holdings[target.code] = Math.max(0, npcData.holdings[target.code] - qty);
-        npcData.totalPnL += qty * target.price;
-      }
-
-      const msg = `🏦 ${npc} ${action}s ${qty} units of ${target.code}`;
-      npcData.tradeLog.push(msg);
-
-      const item = document.createElement("li");
-      item.textContent = msg;
-      npcLog.prepend(item);
-      newsQueue.push(msg);
-    }
-
-    function rotateNewsTicker() {
-      if (newsQueue.length > 0) {
-        const next = newsQueue.shift();
-        newsTicker.textContent = next;
-      }
     }
 
     setInterval(() => {
