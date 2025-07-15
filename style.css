@@ -96,3 +96,12 @@ canvas {
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0,255,200,0.2);
 }
+
+#npcProfileOutput {
+  margin-top: 10px;
+  background-color: #181818;
+  padding: 10px;
+  border-left: 4px solid #7ad9ff;
+  border-radius: 6px;
+  box-shadow: 0 0 6px rgba(122,217,255,0.1);
+}
