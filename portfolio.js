@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fable Portfolio Viewer</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header>
+    <h1>📊 Player Portfolio</h1>
+    <nav>
+      <a href="index.html">Exchange</a> |
+      <a href="npc.html">NPCs</a> |
+      <a href="archive.html">Archive</a> |
+      <a href="portfolio.html" class="active">Portfolio</a>
+    </nav>
+  </header>
+
+  <main>
+    <section id="summary">
+      <h2>Overview</h2>
+      <p>Total Portfolio Value: <span id="totalValue">Loading...</span></p>
+      <p>Total Profit/Loss: <span id="totalPL">Loading...</span></p>
+    </section>
+
+    <section id="holdings">
+      <h2>Current Holdings</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Name</th>
+            <th>Units</th>
+            <th>Price</th>
+            <th>Value</th>
+            <th>P/L</th>
+          </tr>
+        </thead>
+        <tbody id="holdingsTable"></tbody>
+      </table>
+    </section>
+
+    <section id="allocation">
+      <h2>Asset Allocation</h2>
+      <canvas id="allocationChart"></canvas>
+    </section>
+
+    <section id="history">
+      <h2>Trade History</h2>
+      <ul id="tradeHistory"></ul>
+    </section>
+  </main>
+
+  <script src="portfolio.js"></script>
+</body>
+</html>
