@@ -2,71 +2,82 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Fable Commodities Exchange</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fable Exchange</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <div id="mainContainer">
-    <header>
-      <h1>Fable Commodities Exchange</h1>
-      <div id="newsTickerWrapper">
-        <div id="newsTicker">Welcome to the Exchange</div>
-      </div>
-    </header>
+  <header>
+    <h1>📈 Fable Market Exchange</h1>
+    <nav>
+      <a href="index.html" class="active">Exchange</a> |
+      <a href="portfolio.html">Portfolio</a> |
+      <a href="npc.html">NPCs</a> |
+      <a href="archive.html">Archive</a>
+    </nav>
+  </header>
 
-    <section id="tradeInterface">
-      <label for="productDropdown">Choose a Security:</label>
+  <main>
+    <section id="exchange">
+      <h2>Market Trading</h2>
+      <label for="productDropdown">Select Security:</label>
       <select id="productDropdown"></select>
-
-      <div class="stat-panel">
-        <p id="priceData"></p>
+      <div id="stats">
+        <p id="priceData">Loading...</p>
         <p id="descriptionData"></p>
         <p id="volatilityData"></p>
       </div>
-
-      <label for="tradeQty">Quantity:</label>
-      <input type="number" id="tradeQty" min="1" />
-      <button id="buyButton">Buy</button>
-      <button id="sellButton">Sell</button>
+      <canvas id="priceChart"></canvas>
+      <div class="trade-controls">
+        <input type="number" id="tradeQty" placeholder="Qty" />
+        <button id="buyButton">Buy</button>
+        <button id="sellButton">Sell</button>
+      </div>
     </section>
 
-    <section id="portfolioPanel">
+    <section id="portfolio">
       <h2>Your Portfolio</h2>
-      <p>Marks: <span id="marksDisplay">₥1000.00</span> (₥1 ≈ $100 USD)</p>
+      <p>Available Funds: <span id="marksDisplay">₥0.00</span></p>
       <ul id="portfolioList"></ul>
     </section>
 
-    <section id="topStories">
-      <h2>Top Stories</h2>
-      <!-- Top stories will populate here -->
+    <section id="npc">
+      <h2>NPC Activity</h2>
+      <ul id="npcLog"></ul>
     </section>
 
-    <section id="recentActivity">
-      <h2>News Archive</h2>
-      <label for="newsFilter">Filter:</label>
-      <select id="newsFilter">
-        <option value="all">All</option>
-        <option value="trades">Trades</option>
-        <option value="surges">Surges</option>
-        <option value="crashes">Crashes</option>
-      </select>
-      <button onclick="resetNews()">Reset Archive</button>
+    <section id="news">
+      <h2>News Feed</h2>
+      <div id="newsTicker">Loading...</div>
+      <div class="news-controls">
+        <label for="newsFilter">Filter:</label>
+        <select id="newsFilter">
+          <option value="all">All</option>
+          <option value="trades">Trades</option>
+          <option value="surges">Surges</option>
+          <option value="crashes">Crashes</option>
+        </select>
+      </div>
       <div id="eventArchive"></div>
+      <h3>Top Stories</h3>
+      <div id="topStories"></div>
     </section>
 
-    <section id="npcSection">
+    <section id="details">
+      <h2>Security Details</h2>
+      <div id="detailsPanel">Select a security above.</div>
+    </section>
+
+    <section id="npcProfiles">
       <h2>NPC Profiles</h2>
-      <select id="npcSelect"></select>
+      <label for="npcSelect">Choose NPC:</label>
+      <select id="npcSelect">
+        <option value="">Select NPC</option>
+      </select>
       <div id="npcProfileOutput"></div>
     </section>
-
-    <canvas id="priceChart"></canvas>
-    <div id="detailsPanel"></div>
-
-    <ul id="npcLog"></ul>
-  </div>
+  </main>
 
   <script src="script.js"></script>
 </body>
