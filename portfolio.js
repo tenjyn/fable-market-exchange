@@ -33,9 +33,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function loadPortfolio() {
     const saved = JSON.parse(localStorage.getItem("fablePortfolio")) || {};
+    const converted = {};
+    for (const code in saved.portfolio || {}) {
+      const item = saved.portfolio[code];
+      if (typeof item === "number") {
+        converted[code] = { units: item, avgCost: 0 };
+      } else {
+        converted[code] = item;
+      }
+    }
     return {
       marks: saved.marks || 1000,
-      portfolio: saved.portfolio || {},
+      portfolio: converted,
       tradeHistory: saved.tradeHistory || []
     };
   }

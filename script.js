@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
   try {
     let marks = 1000;
     const portfolio = {};
+    const tradeHistory = [];
     const newsQueue = [];
     const newsArchive = JSON.parse(localStorage.getItem("newsArchive")) || [];
     const npcProfiles = {};
@@ -146,15 +147,21 @@ document.addEventListener("DOMContentLoaded", () => {
       if (isNaN(qty) || qty <= 0) return alert("Invalid quantity.");
       const total = qty * selected.price;
       const key = selected.code;
+      const price = selected.price;
       if (type === "buy" && marks >= total) {
         marks -= total;
-        if (!portfolio[key]) portfolio[key] = 0;
-        portfolio[key] += qty;
+        if (!portfolio[key]) portfolio[key] = { units: 0, avgCost: 0 };
+        const holding = portfolio[key];
+        holding.avgCost = ((holding.avgCost * holding.units) + total) / (holding.units + qty);
+        holding.units += qty;
+        tradeHistory.push(`BUY ${qty} ${key} @ ${formatMarks(price)}`);
         logEvent(`✅ Bought ${qty} ${key} for ${formatMarks(total)}`);
-      } else if (type === "sell" && portfolio[key] >= qty) {
+      } else if (type === "sell" && portfolio[key] && portfolio[key].units >= qty) {
         marks += total;
-        portfolio[key] -= qty;
-        if (portfolio[key] === 0) delete portfolio[key];
+        const holding = portfolio[key];
+        holding.units -= qty;
+        if (holding.units === 0) delete portfolio[key];
+        tradeHistory.push(`SELL ${qty} ${key} @ ${formatMarks(price)}`);
         logEvent(`🪙 Sold ${qty} ${key} for ${formatMarks(total)}`);
       } else {
         logEvent(`⚠️ Trade failed.`);
@@ -168,22 +175,36 @@ document.addEventListener("DOMContentLoaded", () => {
       portfolioList.innerHTML = Object.keys(portfolio).length === 0 ? "<li>None owned</li>" : "";
       for (const code in portfolio) {
         const sec = securities.find(s => s.code === code);
-        const val = sec.price * portfolio[code];
+        const holding = portfolio[code];
+        const val = sec.price * holding.units;
         const li = document.createElement("li");
-        li.textContent = `${code}: ${portfolio[code]} units (≈ ${formatMarks(val)})`;
+        li.textContent = `${code}: ${holding.units} units (≈ ${formatMarks(val)})`;
         portfolioList.appendChild(li);
       }
     }
 
     function savePortfolio() {
-      localStorage.setItem("fablePortfolio", JSON.stringify({ marks, portfolio }));
+      localStorage.setItem(
+        "fablePortfolio",
+        JSON.stringify({ marks, portfolio, tradeHistory })
+      );
     }
 
     function loadPortfolio() {
       const saved = JSON.parse(localStorage.getItem("fablePortfolio"));
       if (saved) {
         marks = saved.marks || 1000;
-        Object.assign(portfolio, saved.portfolio);
+        for (const code in saved.portfolio || {}) {
+          const item = saved.portfolio[code];
+          if (typeof item === "number") {
+            portfolio[code] = { units: item, avgCost: 0 };
+          } else {
+            portfolio[code] = item;
+          }
+        }
+        if (Array.isArray(saved.tradeHistory)) {
+          tradeHistory.push(...saved.tradeHistory);
+        }
         updatePortfolio();
       }
     }
