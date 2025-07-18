@@ -3,28 +3,62 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fable Exchange</title>
+  <title>Fable Portfolio</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <header>
-    <h1>📈 Fable Market Exchange</h1>
+    <h1>📊 Player Portfolio</h1>
     <nav>
-      <a href="index.html" class="active">Exchange</a> |
-      <a href="portfolio.html">Portfolio</a> |
+      <a href="index.html" class="active">Portfolio</a> |
       <a href="npc.html">NPCs</a> |
       <a href="archive.html">Archive</a>
     </nav>
   </header>
 
-  <main>
-    <section id="exchange">
-      <h2>Market Trading</h2>
-      <label for="productDropdown">Select Security:</label>
+  <main id="portfolioLayout">
+    <div id="portfolioMain">
+      <section id="summary">
+        <h2>Overview</h2>
+        <p>Total Portfolio Value: <span id="totalValue">Loading...</span></p>
+        <p>Total Profit/Loss: <span id="totalPL">Loading...</span></p>
+      </section>
+
+      <section id="holdings">
+        <h2>Current Holdings</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Name</th>
+              <th>Units</th>
+              <th>Price</th>
+              <th>Value</th>
+              <th>P/L</th>
+            </tr>
+          </thead>
+          <tbody id="holdingsTable"></tbody>
+        </table>
+      </section>
+
+      <section id="allocation">
+        <h2>Asset Allocation</h2>
+        <canvas id="allocationChart"></canvas>
+      </section>
+
+      <section id="history">
+        <h2>Trade History</h2>
+        <ul id="tradeHistory"></ul>
+      </section>
+    </div>
+
+    <aside id="exchangeSidebar">
+      <h2>Quick Trade</h2>
+      <label for="productDropdown">Security:</label>
       <select id="productDropdown"></select>
       <div id="stats">
-        <p id="priceData">Loading...</p>
+        <p id="priceData"></p>
         <p id="descriptionData"></p>
         <p id="volatilityData"></p>
       </div>
@@ -34,51 +68,10 @@
         <button id="buyButton">Buy</button>
         <button id="sellButton">Sell</button>
       </div>
-    </section>
-
-    <section id="portfolio">
-      <h2>Your Portfolio</h2>
-      <p>Available Funds: <span id="marksDisplay">₥0.00</span></p>
-      <ul id="portfolioList"></ul>
-    </section>
-
-    <section id="npc">
-      <h2>NPC Activity</h2>
-      <ul id="npcLog"></ul>
-    </section>
-
-    <section id="news">
-      <h2>News Feed</h2>
-      <div id="newsTicker">Loading...</div>
-      <div class="news-controls">
-        <label for="newsFilter">Filter:</label>
-        <select id="newsFilter">
-          <option value="all">All</option>
-          <option value="trades">Trades</option>
-          <option value="surges">Surges</option>
-          <option value="crashes">Crashes</option>
-        </select>
-      </div>
-      <div id="eventArchive"></div>
-      <h3>Top Stories</h3>
-      <div id="topStories"></div>
-    </section>
-
-    <section id="details">
-      <h2>Security Details</h2>
-      <div id="detailsPanel">Select a security above.</div>
-    </section>
-
-    <section id="npcProfiles">
-      <h2>NPC Profiles</h2>
-      <label for="npcSelect">Choose NPC:</label>
-      <select id="npcSelect">
-        <option value="">Select NPC</option>
-      </select>
-      <div id="npcProfileOutput"></div>
-    </section>
+      <p>Funds: <span id="marksDisplay"></span></p>
+    </aside>
   </main>
 
-  <script src="script.js"></script>
+  <script src="portfolio.js"></script>
 </body>
 </html>
