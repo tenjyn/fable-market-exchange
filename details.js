@@ -159,7 +159,14 @@ document.addEventListener("DOMContentLoaded", () => {
       if (saved) {
         const parsed = JSON.parse(saved);
         marks = parsed.marks || 1000;
-        Object.assign(portfolio, parsed.portfolio);
+        for (const code in parsed.portfolio || {}) {
+          const item = parsed.portfolio[code];
+          if (typeof item === "number") {
+            portfolio[code] = { units: item, avgCost: 0 };
+          } else {
+            portfolio[code] = item;
+          }
+        }
       }
     }
 
@@ -172,9 +179,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       for (const code in portfolio) {
         const sec = securities.find(s => s.code === code);
-        const val = sec.price * portfolio[code];
+        const holding = portfolio[code];
+        const val = sec.price * holding.units;
         const li = document.createElement("li");
-        li.textContent = `${code}: ${portfolio[code]} units (≈ ${formatMarks(val)})`;
+        li.textContent = `${code}: ${holding.units} units (≈ ${formatMarks(val)})`;
         portfolioList.appendChild(li);
       }
     }
