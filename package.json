@@ -1,0 +1,9 @@
+{
+  "name": "fable-market-exchange",
+  "version": "1.0.0",
+  "description": "Fable Markets Exchange simulation",
+  "scripts": {
+    "test": "echo \"No tests defined\""
+  },
+  "license": "MIT"
+}

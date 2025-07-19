@@ -11,6 +11,8 @@ Fable Markets Exchange is a browser-based fantasy commodities simulation that mo
 
     📜 News ticker with rare magical events (booms & busts)
 
+    📰 NPC activity ticker
+
     📊 Dynamic portfolio tracker
 
     🏷️ Sector-based securities: Grain, Infrastructure, Magical
