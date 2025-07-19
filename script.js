@@ -32,7 +32,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const marksDisplay = document.getElementById("marksDisplay");
     const newsTicker = document.getElementById("newsTicker");
     const portfolioList = document.getElementById("portfolioList");
-    const npcLog = document.getElementById("npcLog");
+    const npcTickerText = document.getElementById("npcTickerText");
+    const npcQueue = [];
     const archive = document.getElementById("eventArchive");
     const detailsPanel = document.getElementById("detailsPanel");
     const tradeQtyInput = document.getElementById("tradeQty");
@@ -41,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const npcSelect = document.getElementById("npcSelect");
     const npcProfileOutput = document.getElementById("npcProfileOutput");
 
-    if (!dropdown || !marksDisplay || !newsTicker || !portfolioList || !npcLog || !archive || !detailsPanel || !tradeQtyInput || !filterSelect || !topStoriesBox || !npcSelect || !npcProfileOutput) {
+    if (!dropdown || !marksDisplay || !newsTicker || !portfolioList || !npcTickerText || !archive || !detailsPanel || !tradeQtyInput || !filterSelect || !topStoriesBox || !npcSelect || !npcProfileOutput) {
       throw new Error("Critical UI element missing. Check HTML structure.");
     }
 
@@ -249,7 +250,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const npc = npcProfiles[name];
       const msg = `🏦 ${name} ${action} ${qty} units of ${target.code}`;
 
-      npcLog.prepend(Object.assign(document.createElement("li"), { textContent: msg }));
+      npcQueue.push(msg);
       newsQueue.push(msg);
       newsArchive.push(`[${new Date().toLocaleTimeString()}] ${msg}`);
       npc.history.push(msg);
@@ -276,6 +277,17 @@ document.addEventListener("DOMContentLoaded", () => {
       if (newsQueue.length > 0) newsTicker.textContent = newsQueue.shift();
     }
 
+    function rotateNPCTicker() {
+      if (npcQueue.length > 0) {
+        const next = npcQueue.shift();
+        npcTickerText.textContent = next;
+        npcTickerText.style.animation = "none";
+        // trigger reflow to restart animation
+        void npcTickerText.offsetWidth;
+        npcTickerText.style.animation = null;
+      }
+    }
+
     // Initial load
     loadPortfolio();
     renderNewsArchive();
@@ -287,6 +299,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (document.readyState === "complete") {
         simulateNPC();
         rotateNewsTicker();
+        rotateNPCTicker();
       }
     }, 15000);
 

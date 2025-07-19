@@ -79,7 +79,33 @@ button:hover {
   border-bottom: 1px solid #333;
 }
 
-#portfolioList li, #npcLog li, #tradeHistory li {
+#npcTicker {
+  font-family: monospace;
+  background-color: #1e1e1e;
+  color: #ffca6f;
+  padding: 10px;
+  font-size: 14px;
+  overflow: hidden;
+  white-space: nowrap;
+  border-bottom: 1px solid #333;
+}
+
+#npcTicker span {
+  display: inline-block;
+  padding-left: 100%;
+  animation: scroll-left 15s linear infinite;
+}
+
+@keyframes scroll-left {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+#portfolioList li, #tradeHistory li {
   list-style: none;
   padding: 4px 0;
   border-bottom: 1px solid #2e2e2e;
