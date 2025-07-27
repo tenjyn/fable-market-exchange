@@ -22,10 +22,13 @@ Fable Markets Exchange is a browser-based fantasy commodities simulation that mo
 /project-root
 │
 ├── index.html          # Main trading dashboard
+├── portfolio.html      # Portfolio analytics
+├── details.html        # Standalone security view
 ├── style.css           # Dark mode layout & UI
 ├── script.js           # Core simulation logic
-├── details.js          # Individual security detail page logic
-├── details.html        # Standalone security view
+├── portfolio.js        # Portfolio page logic
+├── details.js          # Security detail page logic
+├── LICENSE             # Open source license
 ├── README.md           # You're reading it
 
 🚀 How to Run
@@ -40,10 +43,9 @@ Fable Markets Exchange is a browser-based fantasy commodities simulation that mo
 
 🔮 Roadmap
 
-Add persistent state with localStorage
+- Expand persistent state with additional metrics
+- Add options/futures trading
+- Multi-player investment guilds
+- Sector-wide disruption events
 
-Expand to include options/futures
-
-Multi-player investment guilds
-
-Expand rare events to sector-wide disruptions
+This project is released under the MIT License. See [LICENSE](LICENSE) for details.
