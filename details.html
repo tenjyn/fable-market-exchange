@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Security Details</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header>
+    <h1>🔍 Security Details</h1>
+    <nav>
+      <a href="index.html">Exchange</a> |
+      <a href="portfolio.html">Portfolio</a> |
+      <a href="details.html" class="active">Details</a>
+    </nav>
+  </header>
+  <main>
+    <section id="detailsSection">
+      <h2 id="secTitle">Details</h2>
+      <p>Available Funds: <span id="marksDisplay">₥0.00</span></p>
+      <div id="detailsPanel">Loading...</div>
+      <canvas id="priceChart"></canvas>
+    </section>
+  </main>
+  <script src="details.js"></script>
+</body>
+</html>
