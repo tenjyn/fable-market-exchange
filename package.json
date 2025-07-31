@@ -1,0 +1,10 @@
+{
+  "name": "fable-market-exchange",
+  "version": "1.0.0",
+  "description": "Fantasy trading simulation",
+  "license": "MIT",
+  "scripts": {
+    "test": "echo \"No tests\"",
+    "build": "echo \"No build\""
+  }
+}
