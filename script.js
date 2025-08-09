@@ -1,5 +1,7 @@
 // script.js — updated for persistent portfolio, NPC profiles, and news ticker polish
 
+import { generateSecurities, formatMarks, generatePriceHistory, loadJSON, saveJSON } from "./utils.js";
+
 // Ensure Chart.js is loaded before this script
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -7,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let marks = 1000;
     const portfolio = {};
     const newsQueue = [];
-    const newsArchive = JSON.parse(localStorage.getItem("newsArchive")) || [];
+    const newsArchive = loadJSON("newsArchive", []);
     const npcProfiles = {};
     const topStories = [];
 
@@ -82,27 +84,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Main functions
 
-    function generateSecurities() {
-      return [
-        { code: "WHT", name: "Wheat Futures", price: 120, desc: "Grain commodity.", sector: "Grain", volatility: 0.03 },
-        { code: "OBL", name: "Oswald Bonds", price: 200, desc: "Infrastructure bond.", sector: "Infrastructure", volatility: 0.02 },
-        { code: "FMR", name: "Fae Mirror Shards", price: 350, desc: "Luxury magical good.", sector: "Magical", volatility: 0.08 },
-        { code: "CNT", name: "Cattle Contracts", price: 160, desc: "Livestock asset.", sector: "Grain", volatility: 0.025 },
-        { code: "BNS", name: "Beans Scrip", price: 95, desc: "Staple commodity.", sector: "Grain", volatility: 0.04 },
-        { code: "CRN", name: "Corn Contracts", price: 110, desc: "Food staple.", sector: "Grain", volatility: 0.035 },
-        { code: "GHM", name: "Golem Housing Mortgages", price: 280, desc: "Magical construction credit.", sector: "Infrastructure", volatility: 0.06 },
-        { code: "LLF", name: "Living Lumber Futures", price: 210, desc: "Fey-grown timber.", sector: "Magical", volatility: 0.05 },
-        { code: "SLK", name: "Sunleaf Kettles", price: 75, desc: "Alchemical ingredient.", sector: "Magical", volatility: 0.07 },
-        { code: "BRK", name: "Barony Roadkeepers Bond", price: 180, desc: "Civic infrastructure bond.", sector: "Infrastructure", volatility: 0.03 },
-        { code: "PRL", name: "Pearl Contracts", price: 260, desc: "Luxury marine goods.", sector: "Magical", volatility: 0.04 },
-        { code: "SRL", name: "Salt Rail Shares", price: 190, desc: "Transportation network.", sector: "Infrastructure", volatility: 0.05 }
-      ];
-    }
-
-    function formatMarks(amount) {
-      return `₥${Number(amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    }
-
     function updateStats(security) {
       document.getElementById("priceData").textContent = `Current Price: ${formatMarks(security.price)}`;
       document.getElementById("descriptionData").textContent = security.desc;
@@ -127,17 +108,6 @@ document.addEventListener("DOMContentLoaded", () => {
           scales: { x: { display: true }, y: { beginAtZero: false } }
         }
       });
-    }
-
-    function generatePriceHistory(base, vol) {
-      const history = [];
-      let current = base;
-      for (let i = 0; i < 90; i++) {
-        const change = current * (Math.random() * vol * 2 - vol);
-        current = Math.max(1, current + change);
-        history.push(current.toFixed(2));
-      }
-      return history;
     }
 
     function trade(type) {
@@ -175,19 +145,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    function savePortfolio() {
-      localStorage.setItem("fablePortfolio", JSON.stringify({ marks, portfolio }));
-    }
-
-    function loadPortfolio() {
-      const saved = JSON.parse(localStorage.getItem("fablePortfolio"));
-      if (saved) {
-        marks = saved.marks || 1000;
-        Object.assign(portfolio, saved.portfolio);
-        updatePortfolio();
-      }
-    }
-
     function logEvent(message) {
       const time = new Date().toLocaleTimeString();
       const entry = `[${time}] ${message}`;
@@ -195,7 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
       newsQueue.push(entry);
       archive.prepend(Object.assign(document.createElement("div"), { textContent: entry }));
       if (entry.includes("💥") || entry.includes("📉")) topStories.push(entry);
-      localStorage.setItem("newsArchive", JSON.stringify(newsArchive.slice(-100)));
+      saveJSON("newsArchive", newsArchive.slice(-100));
       renderTopStories();
     }
 
@@ -252,6 +209,7 @@ document.addEventListener("DOMContentLoaded", () => {
       npcLog.prepend(Object.assign(document.createElement("li"), { textContent: msg }));
       newsQueue.push(msg);
       newsArchive.push(`[${new Date().toLocaleTimeString()}] ${msg}`);
+      saveJSON("newsArchive", newsArchive.slice(-100));
       npc.history.push(msg);
 
       if (action === "buys") {
@@ -274,6 +232,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function rotateNewsTicker() {
       if (newsQueue.length > 0) newsTicker.textContent = newsQueue.shift();
+    }
+
+    function savePortfolio() {
+      saveJSON("fablePortfolio", { marks, portfolio });
+    }
+
+    function loadPortfolio() {
+      const saved = loadJSON("fablePortfolio", { marks: 1000, portfolio: {} });
+      marks = saved.marks;
+      Object.assign(portfolio, saved.portfolio);
+      updatePortfolio();
     }
 
     // Initial load

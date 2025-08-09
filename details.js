@@ -1,11 +1,13 @@
 // script.js (News Sorting + Top Stories)
 
+import { generateSecurities, formatMarks, generatePriceHistory, loadJSON, saveJSON } from "./utils.js";
+
 document.addEventListener("DOMContentLoaded", () => {
   try {
     let marks = 1000;
     const portfolio = {};
     const newsQueue = [];
-    const newsArchive = JSON.parse(localStorage.getItem("newsArchive")) || [];
+    const newsArchive = loadJSON("newsArchive", []);
     let topStories = [];
 
     const securities = generateSecurities();
@@ -76,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("sellButton").addEventListener("click", () => trade("sell"));
 
     function saveNewsArchive() {
-      localStorage.setItem("newsArchive", JSON.stringify(newsArchive.slice(-100)));
+      saveJSON("newsArchive", newsArchive.slice(-100));
     }
 
     function renderNewsArchive() {
@@ -150,17 +152,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    function formatMarks(amount) {
-      return `₥${Number(amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    }
-
     function loadPortfolio() {
-      const saved = localStorage.getItem("fablePortfolio");
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        marks = parsed.marks || 1000;
-        Object.assign(portfolio, parsed.portfolio);
-      }
+      const saved = loadJSON("fablePortfolio", { marks: 1000, portfolio: {} });
+      marks = saved.marks;
+      Object.assign(portfolio, saved.portfolio);
     }
 
     function updatePortfolio() {
