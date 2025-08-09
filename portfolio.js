@@ -1,5 +1,7 @@
 // portfolio.js – full rewrite with profit/loss, trade history, and allocation chart support
 
+import { generateSecurities, formatMarks, loadJSON } from "./utils.js";
+
 document.addEventListener("DOMContentLoaded", () => {
   const totalValueEl = document.getElementById("totalValue");
   const totalPLEl = document.getElementById("totalPL");
@@ -14,34 +16,13 @@ document.addEventListener("DOMContentLoaded", () => {
   renderTradeHistory();
   drawAllocationChart();
 
-  function generateSecurities() {
-    return [
-      { code: "WHT", name: "Wheat Futures", price: 120, sector: "Grain" },
-      { code: "OBL", name: "Oswald Bonds", price: 200, sector: "Infrastructure" },
-      { code: "FMR", name: "Fae Mirror Shards", price: 350, sector: "Magical" },
-      { code: "CNT", name: "Cattle Contracts", price: 160, sector: "Grain" },
-      { code: "BNS", name: "Beans Scrip", price: 95, sector: "Grain" },
-      { code: "CRN", name: "Corn Contracts", price: 110, sector: "Grain" },
-      { code: "GHM", name: "Golem Housing Mortgages", price: 280, sector: "Infrastructure" },
-      { code: "LLF", name: "Living Lumber Futures", price: 210, sector: "Magical" },
-      { code: "SLK", name: "Sunleaf Kettles", price: 75, sector: "Magical" },
-      { code: "BRK", name: "Barony Roadkeepers Bond", price: 180, sector: "Infrastructure" },
-      { code: "PRL", name: "Pearl Contracts", price: 260, sector: "Magical" },
-      { code: "SRL", name: "Salt Rail Shares", price: 190, sector: "Infrastructure" }
-    ];
-  }
-
   function loadPortfolio() {
-    const saved = JSON.parse(localStorage.getItem("fablePortfolio")) || {};
+    const saved = loadJSON("fablePortfolio", {});
     return {
       marks: saved.marks || 1000,
       portfolio: saved.portfolio || {},
       tradeHistory: saved.tradeHistory || []
     };
-  }
-
-  function formatMarks(val) {
-    return `₥${Number(val).toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
   }
 
   function renderPortfolio() {

@@ -30,6 +30,7 @@
       </div>
       <canvas id="priceChart"></canvas>
       <div class="trade-controls">
+        <label for="tradeQty">Quantity:</label>
         <input type="number" id="tradeQty" placeholder="Qty" />
         <button id="buyButton">Buy</button>
         <button id="sellButton">Sell</button>
@@ -49,7 +50,7 @@
 
     <section id="news">
       <h2>News Feed</h2>
-      <div id="newsTicker">Loading...</div>
+      <div id="newsTicker" aria-live="polite">Loading...</div>
       <div class="news-controls">
         <label for="newsFilter">Filter:</label>
         <select id="newsFilter">
@@ -79,6 +80,6 @@
     </section>
   </main>
 
-  <script src="script.js"></script>
+  <script type="module" src="script.js"></script>
 </body>
 </html>

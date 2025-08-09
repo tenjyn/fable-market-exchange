@@ -1,0 +1,12 @@
+{
+  "name": "fable-market-exchange",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint .",
+    "test": "npm run lint"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0"
+  }
+}
