@@ -109,6 +109,15 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("volatilityData").textContent = `Volatility: ${security.volatility}`;
     }
 
+    function updateDetailsPage(security) {
+      detailsPanel.innerHTML = `
+        <h3>${security.code} - ${security.name}</h3>
+        <p>Sector: ${security.sector}</p>
+        <p>Price: ${formatMarks(security.price)}</p>
+        <p>${security.desc}</p>
+      `;
+    }
+
     function drawChart(security) {
       const chartCanvas = document.getElementById("priceChart");
       if (!chartCanvas || !chartCanvas.getContext) return;
