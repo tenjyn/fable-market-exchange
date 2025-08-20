@@ -32,12 +32,19 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function loadPortfolio() {
-    const saved = JSON.parse(localStorage.getItem("fablePortfolio")) || {};
-    return {
-      marks: saved.marks || 1000,
-      portfolio: saved.portfolio || {},
-      tradeHistory: saved.tradeHistory || []
-    };
+    try {
+      const raw = localStorage.getItem("fablePortfolio");
+      const saved = raw ? JSON.parse(raw) : {};
+      return {
+        marks: saved.marks || 1000,
+        portfolio: saved.portfolio || {},
+        tradeHistory: saved.tradeHistory || []
+      };
+    } catch (e) {
+      console.error("Failed to parse portfolio from localStorage", e);
+      localStorage.removeItem("fablePortfolio");
+      return { marks: 1000, portfolio: {}, tradeHistory: [] };
+    }
   }
 
   function formatMarks(val) {

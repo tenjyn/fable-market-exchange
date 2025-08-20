@@ -135,9 +135,18 @@ document.addEventListener("DOMContentLoaded", () => {
       for (let i = 0; i < 90; i++) {
         const change = current * (Math.random() * vol * 2 - vol);
         current = Math.max(1, current + change);
-        history.push(current.toFixed(2));
+        history.push(Number(current.toFixed(2)));
       }
       return history;
+    }
+
+    function updateDetailsPage(security) {
+      detailsPanel.innerHTML = `
+        <h3>${security.name} (${security.code})</h3>
+        <p>${security.desc}</p>
+        <p>Price: ${formatMarks(security.price)}</p>
+        <p>Volatility: ${security.volatility}</p>
+      `;
     }
 
     function trade(type) {
@@ -180,11 +189,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function loadPortfolio() {
-      const saved = JSON.parse(localStorage.getItem("fablePortfolio"));
-      if (saved) {
+      try {
+        const savedRaw = localStorage.getItem("fablePortfolio");
+        if (!savedRaw) return;
+        const saved = JSON.parse(savedRaw);
         marks = saved.marks || 1000;
         Object.assign(portfolio, saved.portfolio);
         updatePortfolio();
+      } catch (e) {
+        console.error("Failed to parse portfolio from localStorage", e);
+        localStorage.removeItem("fablePortfolio");
       }
     }
 

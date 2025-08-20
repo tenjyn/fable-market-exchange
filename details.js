@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ];
 
     const dropdown = document.getElementById("productDropdown");
-    const marksDisplay = document.getElementById("goldDisplay");
+    const marksDisplay = document.getElementById("marksDisplay");
     const newsTicker = document.getElementById("newsTicker");
     const portfolioList = document.getElementById("portfolioList");
     const npcLog = document.getElementById("npcLog");
@@ -45,6 +45,76 @@ document.addEventListener("DOMContentLoaded", () => {
     loadPortfolio();
 
     filterSelect.addEventListener("change", renderNewsArchive);
+
+    function generateSecurities() {
+      return [
+        { code: "WHT", name: "Wheat Futures", price: 120, desc: "Grain commodity.", sector: "Grain", volatility: 0.03 },
+        { code: "OBL", name: "Oswald Bonds", price: 200, desc: "Infrastructure bond.", sector: "Infrastructure", volatility: 0.02 },
+        { code: "FMR", name: "Fae Mirror Shards", price: 350, desc: "Luxury magical good.", sector: "Magical", volatility: 0.08 },
+        { code: "CNT", name: "Cattle Contracts", price: 160, desc: "Livestock asset.", sector: "Grain", volatility: 0.025 },
+        { code: "BNS", name: "Beans Scrip", price: 95, desc: "Staple commodity.", sector: "Grain", volatility: 0.04 },
+        { code: "CRN", name: "Corn Contracts", price: 110, desc: "Food staple.", sector: "Grain", volatility: 0.035 },
+        { code: "GHM", name: "Golem Housing Mortgages", price: 280, desc: "Magical construction credit.", sector: "Infrastructure", volatility: 0.06 },
+        { code: "LLF", name: "Living Lumber Futures", price: 210, desc: "Fey-grown timber.", sector: "Magical", volatility: 0.05 },
+        { code: "SLK", name: "Sunleaf Kettles", price: 75, desc: "Alchemical ingredient.", sector: "Magical", volatility: 0.07 },
+        { code: "BRK", name: "Barony Roadkeepers Bond", price: 180, desc: "Civic infrastructure bond.", sector: "Infrastructure", volatility: 0.03 },
+        { code: "PRL", name: "Pearl Contracts", price: 260, desc: "Luxury marine goods.", sector: "Magical", volatility: 0.04 },
+        { code: "SRL", name: "Salt Rail Shares", price: 190, desc: "Transportation network.", sector: "Infrastructure", volatility: 0.05 }
+      ];
+    }
+
+    function updateStats(security) {
+      document.getElementById("priceData").textContent = `Current Price: ${formatMarks(security.price)}`;
+      document.getElementById("descriptionData").textContent = security.desc;
+      document.getElementById("volatilityData").textContent = `Volatility: ${security.volatility}`;
+    }
+
+    function generatePriceHistory(base, vol) {
+      const history = [];
+      let current = base;
+      for (let i = 0; i < 90; i++) {
+        const change = current * (Math.random() * vol * 2 - vol);
+        current = Math.max(1, current + change);
+        history.push(Number(current.toFixed(2)));
+      }
+      return history;
+    }
+
+    function updateDetailsPage(security) {
+      detailsPanel.innerHTML = `
+        <h3>${security.name} (${security.code})</h3>
+        <p>${security.desc}</p>
+        <p>Price: ${formatMarks(security.price)}</p>
+        <p>Volatility: ${security.volatility}</p>
+      `;
+    }
+
+    function trade(type) {
+      if (!selected) return alert("Select a security.");
+      const qty = parseInt(tradeQtyInput.value);
+      if (isNaN(qty) || qty <= 0) return alert("Invalid quantity.");
+      const total = qty * selected.price;
+      const key = selected.code;
+      if (type === "buy" && marks >= total) {
+        marks -= total;
+        if (!portfolio[key]) portfolio[key] = 0;
+        portfolio[key] += qty;
+        logEvent(`✅ Bought ${qty} ${key} for ${formatMarks(total)}`);
+      } else if (type === "sell" && portfolio[key] >= qty) {
+        marks += total;
+        portfolio[key] -= qty;
+        if (portfolio[key] === 0) delete portfolio[key];
+        logEvent(`🪙 Sold ${qty} ${key} for ${formatMarks(total)}`);
+      } else {
+        logEvent(`⚠️ Trade failed.`);
+      }
+      updatePortfolio();
+      savePortfolio();
+    }
+
+    function savePortfolio() {
+      localStorage.setItem("fablePortfolio", JSON.stringify({ marks, portfolio }));
+    }
 
     const grouped = {};
     securities.forEach(sec => {
@@ -155,11 +225,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function loadPortfolio() {
-      const saved = localStorage.getItem("fablePortfolio");
-      if (saved) {
-        const parsed = JSON.parse(saved);
+      try {
+        const savedRaw = localStorage.getItem("fablePortfolio");
+        if (!savedRaw) return;
+        const parsed = JSON.parse(savedRaw);
         marks = parsed.marks || 1000;
         Object.assign(portfolio, parsed.portfolio);
+        updatePortfolio();
+      } catch (e) {
+        console.error("Failed to parse portfolio from localStorage", e);
+        localStorage.removeItem("fablePortfolio");
       }
     }
 
