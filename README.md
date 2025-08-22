@@ -24,8 +24,6 @@ Fable Markets Exchange is a browser-based fantasy commodities simulation that mo
 ├── index.html          # Main trading dashboard
 ├── style.css           # Dark mode layout & UI
 ├── script.js           # Core simulation logic
-├── details.js          # Individual security detail page logic
-├── details.html        # Standalone security view
 ├── README.md           # You're reading it
 
 🚀 How to Run
@@ -36,7 +34,6 @@ Fable Markets Exchange is a browser-based fantasy commodities simulation that mo
 
     Interact with the market (select a security, buy/sell, observe price shifts)
 
-    View detailed analytics by navigating to details.html?code=WHT (or any valid ticker)
 
 🔮 Roadmap
 

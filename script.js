@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
   try {
     let marks = 1000;
     const portfolio = {};
+    const tradeHistory = [];
     const newsQueue = [];
     const newsArchive = JSON.parse(localStorage.getItem("newsArchive")) || [];
     const npcProfiles = {};
@@ -155,16 +156,23 @@ document.addEventListener("DOMContentLoaded", () => {
       if (isNaN(qty) || qty <= 0) return alert("Invalid quantity.");
       const total = qty * selected.price;
       const key = selected.code;
+      const time = new Date().toLocaleTimeString();
       if (type === "buy" && marks >= total) {
         marks -= total;
-        if (!portfolio[key]) portfolio[key] = 0;
-        portfolio[key] += qty;
+        if (!portfolio[key]) portfolio[key] = { units: 0, avgCost: selected.price };
+        const holding = portfolio[key];
+        const newUnits = holding.units + qty;
+        holding.avgCost = ((holding.avgCost * holding.units) + total) / newUnits;
+        holding.units = newUnits;
         logEvent(`✅ Bought ${qty} ${key} for ${formatMarks(total)}`);
-      } else if (type === "sell" && portfolio[key] >= qty) {
+        tradeHistory.push(`[${time}] Bought ${qty} ${key} at ${formatMarks(selected.price)}`);
+      } else if (type === "sell" && portfolio[key] && portfolio[key].units >= qty) {
         marks += total;
-        portfolio[key] -= qty;
-        if (portfolio[key] === 0) delete portfolio[key];
+        const holding = portfolio[key];
+        holding.units -= qty;
+        if (holding.units === 0) delete portfolio[key];
         logEvent(`🪙 Sold ${qty} ${key} for ${formatMarks(total)}`);
+        tradeHistory.push(`[${time}] Sold ${qty} ${key} at ${formatMarks(selected.price)}`);
       } else {
         logEvent(`⚠️ Trade failed.`);
       }
@@ -177,15 +185,16 @@ document.addEventListener("DOMContentLoaded", () => {
       portfolioList.innerHTML = Object.keys(portfolio).length === 0 ? "<li>None owned</li>" : "";
       for (const code in portfolio) {
         const sec = securities.find(s => s.code === code);
-        const val = sec.price * portfolio[code];
+        const holding = portfolio[code];
+        const val = sec.price * holding.units;
         const li = document.createElement("li");
-        li.textContent = `${code}: ${portfolio[code]} units (≈ ${formatMarks(val)})`;
+        li.textContent = `${code}: ${holding.units} units (avg ${formatMarks(holding.avgCost)} ≈ ${formatMarks(val)})`;
         portfolioList.appendChild(li);
       }
     }
 
     function savePortfolio() {
-      localStorage.setItem("fablePortfolio", JSON.stringify({ marks, portfolio }));
+      localStorage.setItem("fablePortfolio", JSON.stringify({ marks, portfolio, tradeHistory }));
     }
 
     function loadPortfolio() {
@@ -194,7 +203,12 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!savedRaw) return;
         const saved = JSON.parse(savedRaw);
         marks = saved.marks || 1000;
-        Object.assign(portfolio, saved.portfolio);
+        const savedPortfolio = saved.portfolio || {};
+        for (const code in savedPortfolio) {
+          const entry = savedPortfolio[code];
+          portfolio[code] = typeof entry === "number" ? { units: entry, avgCost: 0 } : entry;
+        }
+        tradeHistory.push(...(saved.tradeHistory || []));
         updatePortfolio();
       } catch (e) {
         console.error("Failed to parse portfolio from localStorage", e);
@@ -264,8 +278,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const msg = `🏦 ${name} ${action} ${qty} units of ${target.code}`;
 
       npcLog.prepend(Object.assign(document.createElement("li"), { textContent: msg }));
-      newsQueue.push(msg);
-      newsArchive.push(`[${new Date().toLocaleTimeString()}] ${msg}`);
+      logEvent(msg);
       npc.history.push(msg);
 
       if (action === "buys") {
