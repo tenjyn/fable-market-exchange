@@ -1,0 +1,13 @@
+{
+  "name": "fable-market-exchange",
+  "version": "1.0.0",
+  "description": "📘 Fable Markets Exchange",
+  "main": "details.js",
+  "type": "commonjs",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}

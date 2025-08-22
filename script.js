@@ -2,6 +2,21 @@
 
 // Ensure Chart.js is loaded before this script
 
+function calculateTrade(marks, portfolio, selected, qty, type) {
+  const total = qty * selected.price;
+  const updated = { ...portfolio };
+  if (type === "buy" && marks >= total) {
+    updated[selected.code] = (updated[selected.code] || 0) + qty;
+    return { success: true, marks: marks - total, portfolio: updated };
+  }
+  if (type === "sell" && (updated[selected.code] || 0) >= qty) {
+    updated[selected.code] -= qty;
+    if (updated[selected.code] === 0) delete updated[selected.code];
+    return { success: true, marks: marks + total, portfolio: updated };
+  }
+  return { success: false, marks, portfolio: updated };
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   try {
     let marks = 1000;
@@ -153,18 +168,18 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!selected) return alert("Select a security.");
       const qty = parseInt(tradeQtyInput.value);
       if (isNaN(qty) || qty <= 0) return alert("Invalid quantity.");
+      const { success, marks: newMarks, portfolio: newPortfolio } = calculateTrade(marks, portfolio, selected, qty, type);
+      marks = newMarks;
+      for (const k in portfolio) delete portfolio[k];
+      Object.assign(portfolio, newPortfolio);
       const total = qty * selected.price;
       const key = selected.code;
-      if (type === "buy" && marks >= total) {
-        marks -= total;
-        if (!portfolio[key]) portfolio[key] = 0;
-        portfolio[key] += qty;
-        logEvent(`✅ Bought ${qty} ${key} for ${formatMarks(total)}`);
-      } else if (type === "sell" && portfolio[key] >= qty) {
-        marks += total;
-        portfolio[key] -= qty;
-        if (portfolio[key] === 0) delete portfolio[key];
-        logEvent(`🪙 Sold ${qty} ${key} for ${formatMarks(total)}`);
+      if (success) {
+        if (type === "buy") {
+          logEvent(`✅ Bought ${qty} ${key} for ${formatMarks(total)}`);
+        } else {
+          logEvent(`🪙 Sold ${qty} ${key} for ${formatMarks(total)}`);
+        }
       } else {
         logEvent(`⚠️ Trade failed.`);
       }
@@ -308,3 +323,7 @@ document.addEventListener("DOMContentLoaded", () => {
     console.error("Script Error:", err);
   }
 });
+
+if (typeof module !== "undefined") {
+  module.exports = { calculateTrade };
+}
