@@ -164,20 +164,21 @@ document.addEventListener("DOMContentLoaded", () => {
         const newUnits = holding.units + qty;
         holding.avgCost = ((holding.avgCost * holding.units) + total) / newUnits;
         holding.units = newUnits;
-        logEvent(`✅ Bought ${qty} ${key} for ${formatMarks(total)}`);
+        logEvent(`🏦 ✅ Bought ${qty} ${key} for ${formatMarks(total)}`);
         tradeHistory.push(`[${time}] Bought ${qty} ${key} at ${formatMarks(selected.price)}`);
       } else if (type === "sell" && portfolio[key] && portfolio[key].units >= qty) {
         marks += total;
         const holding = portfolio[key];
         holding.units -= qty;
         if (holding.units === 0) delete portfolio[key];
-        logEvent(`🪙 Sold ${qty} ${key} for ${formatMarks(total)}`);
+        logEvent(`🏦 🪙 Sold ${qty} ${key} for ${formatMarks(total)}`);
         tradeHistory.push(`[${time}] Sold ${qty} ${key} at ${formatMarks(selected.price)}`);
       } else {
-        logEvent(`⚠️ Trade failed.`);
+        logEvent(`🏦 ⚠️ Trade failed.`);
       }
-      updatePortfolio();
-      savePortfolio();
+        updatePortfolio();
+        savePortfolio();
+        tradeQtyInput.value = "";
     }
 
     function updatePortfolio() {
@@ -221,10 +222,10 @@ document.addEventListener("DOMContentLoaded", () => {
       const entry = `[${time}] ${message}`;
       newsArchive.push(entry);
       newsQueue.push(entry);
-      archive.prepend(Object.assign(document.createElement("div"), { textContent: entry }));
       if (entry.includes("💥") || entry.includes("📉")) topStories.push(entry);
       localStorage.setItem("newsArchive", JSON.stringify(newsArchive.slice(-100)));
       renderTopStories();
+      renderNewsArchive();
     }
 
     function renderNewsArchive() {
