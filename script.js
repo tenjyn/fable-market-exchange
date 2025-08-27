@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const newsArchive = JSON.parse(localStorage.getItem("newsArchive")) || [];
     const npcProfiles = {};
     const topStories = [];
+    const npcTradeLog = JSON.parse(localStorage.getItem("npcTradeLog")) || [];
 
     const securities = generateSecurities();
     let selected = null;
@@ -42,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const npcSelect = document.getElementById("npcSelect");
     const npcProfileOutput = document.getElementById("npcProfileOutput");
 
-    if (!dropdown || !marksDisplay || !newsTicker || !portfolioList || !npcLog || !archive || !detailsPanel || !tradeQtyInput || !filterSelect || !topStoriesBox || !npcSelect || !npcProfileOutput) {
+    if (!dropdown || !marksDisplay || !newsTicker || !portfolioList || !archive || !detailsPanel || !tradeQtyInput || !filterSelect || !topStoriesBox || !npcSelect || !npcProfileOutput) {
       throw new Error("Critical UI element missing. Check HTML structure.");
     }
 
@@ -277,10 +278,16 @@ document.addEventListener("DOMContentLoaded", () => {
       const action = Math.random() < 0.5 ? "buys" : "sells";
       const npc = npcProfiles[name];
       const msg = `🏦 ${name} ${action} ${qty} units of ${target.code}`;
+      const time = new Date().toLocaleTimeString();
+      const entry = `[${time}] ${msg}`;
 
-      npcLog.prepend(Object.assign(document.createElement("li"), { textContent: msg }));
+      if (npcLog) {
+        npcLog.prepend(Object.assign(document.createElement("li"), { textContent: entry }));
+      }
+      npcTradeLog.push(entry);
+      localStorage.setItem("npcTradeLog", JSON.stringify(npcTradeLog.slice(-100)));
       logEvent(msg);
-      npc.history.push(msg);
+      npc.history.push(entry);
 
       if (action === "buys") {
         npc.holdings[target.code] = (npc.holdings[target.code] || 0) + qty;
