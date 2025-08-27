@@ -1,0 +1,13 @@
+{
+  "name": "fable-market-exchange",
+  "version": "1.0.0",
+  "description": "📘 Fable Markets Exchange",
+  "main": "npc-log.js",
+  "scripts": {
+    "test": "node --test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}

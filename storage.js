@@ -23,3 +23,7 @@ function loadPortfolioData() {
 function savePortfolioData(data) {
   localStorage.setItem("fablePortfolio", JSON.stringify(data));
 }
+
+if (typeof module !== "undefined") {
+  module.exports = { loadPortfolioData, savePortfolioData };
+}
