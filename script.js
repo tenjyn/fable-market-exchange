@@ -37,6 +37,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const dropdown = document.getElementById("productDropdown");
     const marksDisplay = document.getElementById("marksDisplay");
+    const totalValueDisplay = document.getElementById("totalValueDisplay");
+    const profitLossDisplay = document.getElementById("profitLossDisplay");
     const newsTicker = document.getElementById("newsTicker");
     const portfolioList = document.getElementById("portfolioList");
     const npcLog = document.getElementById("npcLog");
@@ -48,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const npcSelect = document.getElementById("npcSelect");
     const npcProfileOutput = document.getElementById("npcProfileOutput");
 
-    if (!dropdown || !marksDisplay || !newsTicker || !portfolioList || !archive || !detailsPanel || !tradeQtyInput || !filterSelect || !topStoriesBox || !npcSelect || !npcProfileOutput) {
+    if (!dropdown || !marksDisplay || !totalValueDisplay || !profitLossDisplay || !newsTicker || !portfolioList || !archive || !detailsPanel || !tradeQtyInput || !filterSelect || !topStoriesBox || !npcSelect || !npcProfileOutput) {
       throw new Error("Critical UI element missing. Check HTML structure.");
     }
 
@@ -173,14 +175,22 @@ document.addEventListener("DOMContentLoaded", () => {
     function updatePortfolio() {
       marksDisplay.textContent = formatMarks(marks);
       portfolioList.innerHTML = Object.keys(portfolio).length === 0 ? "<li>None owned</li>" : "";
+      let totalValue = 0;
+      let totalPL = 0;
       for (const code in portfolio) {
         const sec = securities.find(s => s.code === code);
         const holding = portfolio[code];
         const val = sec.price * holding.units;
+        const pl = (sec.price - holding.avgCost) * holding.units;
+        totalValue += val;
+        totalPL += pl;
         const li = document.createElement("li");
         li.textContent = `${code}: ${holding.units} units (avg ${formatMarks(holding.avgCost)} ≈ ${formatMarks(val)})`;
         portfolioList.appendChild(li);
       }
+      totalValueDisplay.textContent = formatMarks(totalValue);
+      profitLossDisplay.textContent = `${totalPL >= 0 ? '+' : ''}${formatMarks(totalPL)}`;
+      profitLossDisplay.style.color = totalPL >= 0 ? "lime" : "crimson";
     }
 
     function savePortfolio() {
