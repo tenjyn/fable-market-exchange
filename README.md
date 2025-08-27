@@ -3,7 +3,7 @@
 Fable Markets Exchange is a browser-based fantasy commodities simulation that models trading, NPC behaviors, market volatility, and price shifts within the magical economy of Fable.
 🔧 Features
 
-    📈 Real-time price charts (Chart.js)
+    📈 Real-time price charts (Chart.js with offline fallback)
 
     🧠 Simulated NPC investors (banks, trusts, guilds)
 
