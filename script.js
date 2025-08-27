@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const topStories = [];
     const npcTradeLog = JSON.parse(localStorage.getItem("npcTradeLog")) || [];
 
-    const securities = SECURITIES.map(sec => ({ ...sec }));
+    const securities = SECURITIES.map(sec => ({ ...sec, basePrice: sec.price }));
     let selected = null;
     let priceChart = null;
 
@@ -47,8 +47,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const topStoriesBox = document.getElementById("topStories");
     const npcSelect = document.getElementById("npcSelect");
     const npcProfileOutput = document.getElementById("npcProfileOutput");
+    const gainersBox = document.getElementById("topGainers");
+    const losersBox = document.getElementById("topLosers");
 
-    if (!dropdown || !marksDisplay || !newsTicker || !portfolioList || !archive || !detailsPanel || !tradeQtyInput || !filterSelect || !topStoriesBox || !npcSelect || !npcProfileOutput) {
+    if (!dropdown || !marksDisplay || !newsTicker || !portfolioList || !archive || !detailsPanel || !tradeQtyInput || !filterSelect || !topStoriesBox || !npcSelect || !npcProfileOutput || !gainersBox || !losersBox) {
       throw new Error("Critical UI element missing. Check HTML structure.");
     }
 
@@ -217,6 +219,21 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
+    function updateMarketSummary() {
+      const withChange = securities.map(s => ({
+        code: s.code,
+        change: ((s.price - s.basePrice) / s.basePrice) * 100
+      }));
+      const gainers = [...withChange].sort((a, b) => b.change - a.change).slice(0, 3);
+      const losers = [...withChange].sort((a, b) => a.change - b.change).slice(0, 3);
+      gainersBox.innerHTML = `<h3>Top Gainers</h3>${gainers
+        .map(g => `<p>${g.code}: ${g.change.toFixed(2)}%</p>`)
+        .join("")}`;
+      losersBox.innerHTML = `<h3>Top Losers</h3>${losers
+        .map(l => `<p>${l.code}: ${l.change.toFixed(2)}%</p>`)
+        .join("")}`;
+    }
+
     function populateNPCDropdown() {
       npcNames.forEach(name => {
         npcProfiles[name] = { holdings: {}, history: [], pnl: 0 };
@@ -273,6 +290,7 @@ document.addEventListener("DOMContentLoaded", () => {
         logEvent(`${boomOrBust} ${target.code} adjusted to ${formatMarks(target.price)}`);
         if (selected?.code === target.code) drawChart(target);
         updateStats(target);
+        updateMarketSummary();
       }
     }
 
@@ -285,11 +303,13 @@ document.addEventListener("DOMContentLoaded", () => {
     renderTopStories();
     populateNPCDropdown();
     updatePortfolio();
+    updateMarketSummary();
 
     function runSimulations() {
       if (document.readyState === "complete") {
         simulateNPC();
         rotateNewsTicker();
+        updateMarketSummary();
       }
     }
 
