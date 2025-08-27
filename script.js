@@ -39,6 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const marksDisplay = document.getElementById("marksDisplay");
     const newsTicker = document.getElementById("newsTicker");
     const portfolioList = document.getElementById("portfolioList");
+    const recentTrades = document.getElementById("recentTrades");
     const npcLog = document.getElementById("npcLog");
     const archive = document.getElementById("eventArchive");
     const detailsPanel = document.getElementById("detailsPanel");
@@ -48,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const npcSelect = document.getElementById("npcSelect");
     const npcProfileOutput = document.getElementById("npcProfileOutput");
 
-    if (!dropdown || !marksDisplay || !newsTicker || !portfolioList || !archive || !detailsPanel || !tradeQtyInput || !filterSelect || !topStoriesBox || !npcSelect || !npcProfileOutput) {
+    if (!dropdown || !marksDisplay || !newsTicker || !portfolioList || !recentTrades || !archive || !detailsPanel || !tradeQtyInput || !filterSelect || !topStoriesBox || !npcSelect || !npcProfileOutput) {
       throw new Error("Critical UI element missing. Check HTML structure.");
     }
 
@@ -154,20 +155,21 @@ document.addEventListener("DOMContentLoaded", () => {
         holding.avgCost = ((holding.avgCost * holding.units) + total) / newUnits;
         holding.units = newUnits;
         logEvent(`🏦 ✅ Bought ${qty} ${key} for ${formatMarks(total)}`);
-        tradeHistory.push(`[${time}] Bought ${qty} ${key} at ${formatMarks(selected.price)}`);
-      } else if (type === "sell" && portfolio[key] && portfolio[key].units >= qty) {
-        marks += total;
-        const holding = portfolio[key];
-        holding.units -= qty;
-        if (holding.units === 0) delete portfolio[key];
-        logEvent(`🏦 🪙 Sold ${qty} ${key} for ${formatMarks(total)}`);
-        tradeHistory.push(`[${time}] Sold ${qty} ${key} at ${formatMarks(selected.price)}`);
-      } else {
-        logEvent(`🏦 ⚠️ Trade failed.`);
-      }
-      updatePortfolio();
-      savePortfolio();
-      tradeQtyInput.value = "";
+      tradeHistory.push(`[${time}] Bought ${qty} ${key} at ${formatMarks(selected.price)}`);
+    } else if (type === "sell" && portfolio[key] && portfolio[key].units >= qty) {
+      marks += total;
+      const holding = portfolio[key];
+      holding.units -= qty;
+      if (holding.units === 0) delete portfolio[key];
+      logEvent(`🏦 🪙 Sold ${qty} ${key} for ${formatMarks(total)}`);
+      tradeHistory.push(`[${time}] Sold ${qty} ${key} at ${formatMarks(selected.price)}`);
+    } else {
+      logEvent(`🏦 ⚠️ Trade failed.`);
+    }
+    updatePortfolio();
+    renderRecentTrades();
+    savePortfolio();
+    tradeQtyInput.value = "";
     }
 
     function updatePortfolio() {
@@ -181,6 +183,13 @@ document.addEventListener("DOMContentLoaded", () => {
         li.textContent = `${code}: ${holding.units} units (avg ${formatMarks(holding.avgCost)} ≈ ${formatMarks(val)})`;
         portfolioList.appendChild(li);
       }
+    }
+
+    function renderRecentTrades() {
+      recentTrades.innerHTML = "";
+      tradeHistory.slice(-5).forEach(entry => {
+        recentTrades.prepend(Object.assign(document.createElement("li"), { textContent: entry }));
+      });
     }
 
     function savePortfolio() {
@@ -285,6 +294,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderTopStories();
     populateNPCDropdown();
     updatePortfolio();
+    renderRecentTrades();
 
     function runSimulations() {
       if (document.readyState === "complete") {
