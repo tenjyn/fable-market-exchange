@@ -4,16 +4,21 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   try {
-    let marks = 1000;
-    const portfolio = {};
-    const tradeHistory = [];
+    const {
+      marks: loadedMarks,
+      portfolio: loadedPortfolio,
+      tradeHistory: loadedHistory
+    } = loadPortfolioData();
+    let marks = loadedMarks;
+    const portfolio = loadedPortfolio;
+    const tradeHistory = loadedHistory;
     const newsQueue = [];
     const newsArchive = JSON.parse(localStorage.getItem("newsArchive")) || [];
     const npcProfiles = {};
     const topStories = [];
     const npcTradeLog = JSON.parse(localStorage.getItem("npcTradeLog")) || [];
 
-    const securities = generateSecurities();
+    const securities = SECURITIES.map(sec => ({ ...sec }));
     let selected = null;
     let priceChart = null;
 
@@ -83,23 +88,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Main functions
-
-    function generateSecurities() {
-      return [
-        { code: "WHT", name: "Wheat Futures", price: 120, desc: "Grain commodity.", sector: "Grain", volatility: 0.03 },
-        { code: "OBL", name: "Oswald Bonds", price: 200, desc: "Infrastructure bond.", sector: "Infrastructure", volatility: 0.02 },
-        { code: "FMR", name: "Fae Mirror Shards", price: 350, desc: "Luxury magical good.", sector: "Magical", volatility: 0.08 },
-        { code: "CNT", name: "Cattle Contracts", price: 160, desc: "Livestock asset.", sector: "Grain", volatility: 0.025 },
-        { code: "BNS", name: "Beans Scrip", price: 95, desc: "Staple commodity.", sector: "Grain", volatility: 0.04 },
-        { code: "CRN", name: "Corn Contracts", price: 110, desc: "Food staple.", sector: "Grain", volatility: 0.035 },
-        { code: "GHM", name: "Golem Housing Mortgages", price: 280, desc: "Magical construction credit.", sector: "Infrastructure", volatility: 0.06 },
-        { code: "LLF", name: "Living Lumber Futures", price: 210, desc: "Fey-grown timber.", sector: "Magical", volatility: 0.05 },
-        { code: "SLK", name: "Sunleaf Kettles", price: 75, desc: "Alchemical ingredient.", sector: "Magical", volatility: 0.07 },
-        { code: "BRK", name: "Barony Roadkeepers Bond", price: 180, desc: "Civic infrastructure bond.", sector: "Infrastructure", volatility: 0.03 },
-        { code: "PRL", name: "Pearl Contracts", price: 260, desc: "Luxury marine goods.", sector: "Magical", volatility: 0.04 },
-        { code: "SRL", name: "Salt Rail Shares", price: 190, desc: "Transportation network.", sector: "Infrastructure", volatility: 0.05 }
-      ];
-    }
 
     function formatMarks(amount) {
       return `₥${Number(amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -177,9 +165,9 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         logEvent(`🏦 ⚠️ Trade failed.`);
       }
-        updatePortfolio();
-        savePortfolio();
-        tradeQtyInput.value = "";
+      updatePortfolio();
+      savePortfolio();
+      tradeQtyInput.value = "";
     }
 
     function updatePortfolio() {
@@ -196,26 +184,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function savePortfolio() {
-      localStorage.setItem("fablePortfolio", JSON.stringify({ marks, portfolio, tradeHistory }));
-    }
-
-    function loadPortfolio() {
-      try {
-        const savedRaw = localStorage.getItem("fablePortfolio");
-        if (!savedRaw) return;
-        const saved = JSON.parse(savedRaw);
-        marks = saved.marks || 1000;
-        const savedPortfolio = saved.portfolio || {};
-        for (const code in savedPortfolio) {
-          const entry = savedPortfolio[code];
-          portfolio[code] = typeof entry === "number" ? { units: entry, avgCost: 0 } : entry;
-        }
-        tradeHistory.push(...(saved.tradeHistory || []));
-        updatePortfolio();
-      } catch (e) {
-        console.error("Failed to parse portfolio from localStorage", e);
-        localStorage.removeItem("fablePortfolio");
-      }
+      savePortfolioData({ marks, portfolio, tradeHistory });
     }
 
     function logEvent(message) {
@@ -312,18 +281,30 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Initial load
-    loadPortfolio();
     renderNewsArchive();
     renderTopStories();
     populateNPCDropdown();
     updatePortfolio();
 
-    setInterval(() => {
+    function runSimulations() {
       if (document.readyState === "complete") {
         simulateNPC();
         rotateNewsTicker();
       }
-    }, 15000);
+    }
+
+    let intervalId = setInterval(runSimulations, 15000);
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        clearInterval(intervalId);
+        intervalId = null;
+      } else if (!intervalId) {
+        intervalId = setInterval(runSimulations, 15000);
+      }
+    });
+
+    window.addEventListener("beforeunload", () => clearInterval(intervalId));
 
   } catch (err) {
     console.error("Script Error:", err);
