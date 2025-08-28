@@ -75,8 +75,25 @@ button:hover {
   padding: 10px;
   font-size: 14px;
   overflow: hidden;
-  white-space: nowrap;
   border-bottom: 1px solid #333;
+  position: relative;
+}
+
+#newsContent {
+  display: inline-block;
+  white-space: nowrap;
+  position: absolute;
+  will-change: transform;
+  animation: ticker 30s linear infinite;
+}
+
+@keyframes ticker {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(-100%);
+  }
 }
 
 #portfolioList li, #npcLog li, #tradeHistory li {
