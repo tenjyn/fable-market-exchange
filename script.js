@@ -12,7 +12,6 @@ document.addEventListener("DOMContentLoaded", () => {
     let marks = loadedMarks;
     const portfolio = loadedPortfolio;
     const tradeHistory = loadedHistory;
-    const newsQueue = [];
     const newsArchive = JSON.parse(localStorage.getItem("newsArchive")) || [];
     const npcProfiles = {};
     const topStories = [];
@@ -37,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const dropdown = document.getElementById("productDropdown");
     const marksDisplay = document.getElementById("marksDisplay");
-    const newsTicker = document.getElementById("newsTicker");
+    const newsTicker = document.getElementById("newsContent");
     const portfolioList = document.getElementById("portfolioList");
     const recentTrades = document.getElementById("recentTrades");
     const npcLog = document.getElementById("npcLog");
@@ -51,7 +50,23 @@ document.addEventListener("DOMContentLoaded", () => {
     const gainersBox = document.getElementById("topGainers");
     const losersBox = document.getElementById("topLosers");
 
-
+    if (
+      !dropdown ||
+      !marksDisplay ||
+      !newsTicker ||
+      !portfolioList ||
+      !recentTrades ||
+      !npcLog ||
+      !archive ||
+      !detailsPanel ||
+      !tradeQtyInput ||
+      !filterSelect ||
+      !topStoriesBox ||
+      !npcSelect ||
+      !npcProfileOutput ||
+      !gainersBox ||
+      !losersBox
+    ) {
       throw new Error("Critical UI element missing. Check HTML structure.");
     }
 
@@ -202,11 +217,11 @@ document.addEventListener("DOMContentLoaded", () => {
       const time = new Date().toLocaleTimeString();
       const entry = `[${time}] ${message}`;
       newsArchive.push(entry);
-      newsQueue.push(entry);
       if (entry.includes("💥") || entry.includes("📉")) topStories.push(entry);
       localStorage.setItem("newsArchive", JSON.stringify(newsArchive.slice(-100)));
       renderTopStories();
       renderNewsArchive();
+      refreshTicker();
     }
 
     function renderNewsArchive() {
@@ -226,6 +241,16 @@ document.addEventListener("DOMContentLoaded", () => {
         p.textContent = story;
         topStoriesBox.appendChild(p);
       });
+    }
+
+    function refreshTicker() {
+      if (!newsTicker) return;
+      const content = newsArchive.join("  |  ");
+      newsTicker.textContent = content + "  |  " + content;
+      newsTicker.style.animation = "none";
+      void newsTicker.offsetWidth;
+      newsTicker.style.animation = "";
+      newsTicker.style.animation = "ticker 30s linear infinite";
     }
 
     function updateMarketSummary() {
@@ -303,21 +328,17 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    function rotateNewsTicker() {
-      if (newsQueue.length > 0) newsTicker.textContent = newsQueue.shift();
-    }
-
     // Initial load
     renderNewsArchive();
     renderTopStories();
     populateNPCDropdown();
     updatePortfolio();
+    refreshTicker();
 
 
     function runSimulations() {
       if (document.readyState === "complete") {
         simulateNPC();
-        rotateNewsTicker();
         updateMarketSummary();
       }
     }
