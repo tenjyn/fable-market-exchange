@@ -10,5 +10,10 @@ const SECURITIES = [
   { code: "SLK", name: "Sunleaf Kettles", price: 75, desc: "Alchemical ingredient.", sector: "Magical", volatility: 0.07 },
   { code: "BRK", name: "Barony Roadkeepers Bond", price: 180, desc: "Civic infrastructure bond.", sector: "Infrastructure", volatility: 0.03 },
   { code: "PRL", name: "Pearl Contracts", price: 260, desc: "Luxury marine goods.", sector: "Magical", volatility: 0.04 },
-  { code: "SRL", name: "Salt Rail Shares", price: 190, desc: "Transportation network.", sector: "Infrastructure", volatility: 0.05 }
+  { code: "SRL", name: "Salt Rail Shares", price: 190, desc: "Transportation network.", sector: "Infrastructure", volatility: 0.05 },
+  { code: "HMP", name: "Hemp Contracts", price: 105, desc: "Versatile fiber commodity.", sector: "Grain", volatility: 0.032 },
+  { code: "ALC", name: "Alchemist Supplies", price: 90, desc: "Basic alchemical reagents.", sector: "Magical", volatility: 0.06 },
+  { code: "IRN", name: "Ironclad Rail Bonds", price: 175, desc: "Heavy transport infrastructure.", sector: "Infrastructure", volatility: 0.045 },
+  { code: "SPC", name: "Spice Caravans", price: 145, desc: "Exotic spice shipments.", sector: "Grain", volatility: 0.05 },
+  { code: "DRG", name: "Dragon Hoard Notes", price: 400, desc: "Treasure-backed notes.", sector: "Magical", volatility: 0.09 }
 ];
