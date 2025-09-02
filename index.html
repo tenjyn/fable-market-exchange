@@ -3,88 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fable Exchange</title>
+  <title>Dashboard - Fable Exchange</title>
   <link rel="stylesheet" href="style.css" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <header>
-    <h1>📈 Fable Market Exchange</h1>
+    <h1>📊 Market Dashboard</h1>
     <nav>
-        <a href="dashboard.html">Dashboard</a> |
-        <a href="portfolio.html">Portfolio</a> |
-        <a href="index.html" class="active">Exchange</a> |
-        <a href="exchange-index.html">Index</a> |
-        <a href="archive.html">Archive</a> |
-        <a href="https://rpginquisitor.com/the-civic-report/" target="_blank" rel="noopener noreferrer">The Civic Report</a>
-      </nav>
-    </header>
-
+      <a href="index.html" class="active">Dashboard</a> |
+      <a href="portfolio.html">Portfolio</a> |
+      <a href="exchange.html">Exchange</a> |
+      <a href="exchange-index.html">Index</a> |
+      <a href="archive.html">Archive</a> |
+      <a href="https://rpginquisitor.com/the-civic-report/" target="_blank" rel="noopener noreferrer">The Civic Report</a>
+    </nav>
+  </header>
   <main>
-    <section id="marketSummary">
-      <h2>Market Summary</h2>
-      <div id="topGainers"></div>
-      <div id="topLosers"></div>
-    </section>
-
-    <section id="exchange">
-      <h2>Market Trading</h2>
-      <label for="productDropdown">Select Security:</label>
-      <select id="productDropdown"></select>
-      <div id="stats">
-        <p id="priceData">Loading...</p>
-        <p id="descriptionData"></p>
-        <p id="volatilityData"></p>
-      </div>
-      <canvas id="priceChart"></canvas>
-      <div class="trade-controls">
-        <input type="number" id="tradeQty" placeholder="Qty" />
-        <button id="buyButton">Buy</button>
-        <button id="sellButton">Sell</button>
-      </div>
-    </section>
-
-    <section id="portfolio">
-      <h2>Your Portfolio</h2>
-      <p>Available Funds: <span id="marksDisplay">₥0.00</span></p>
-      <ul id="portfolioList"></ul>
-      <ul id="recentTrades"></ul>
-    </section>
-
-    <section id="news">
-      <h2>News Feed</h2>
-      <div id="newsTicker"><div id="newsContent">Loading...</div></div>
-      <div class="news-controls">
-        <label for="newsFilter">Filter:</label>
-        <select id="newsFilter">
-          <option value="all">All</option>
-          <option value="trades">Trades</option>
-          <option value="surges">Surges</option>
-          <option value="crashes">Crashes</option>
-        </select>
-      </div>
-      <div id="eventArchive"></div>
-      <h3>Top Stories</h3>
-      <div id="topStories"></div>
-    </section>
-
-    <section id="details">
-      <h2>Security Details</h2>
-      <div id="detailsPanel">Select a security above.</div>
-    </section>
-
-    <section id="npcProfiles">
-      <h2>NPC Profiles</h2>
-      <label for="npcSelect">Choose NPC:</label>
-      <select id="npcSelect">
-        <option value="">Select NPC</option>
-      </select>
-      <div id="npcProfileOutput"></div>
-    </section>
+    <h2>Dashboard</h2>
+    <div id="dashboardSummary"></div>
+    <p>
+      Use the dashboard to get a quick snapshot of your trading activity.
+      Visit the <a href="portfolio.html">portfolio</a> page for detailed
+      holdings or head to the <a href="exchange.html">exchange</a> to place a
+      trade.
+    </p>
   </main>
-
-  <script src="securities.js"></script>
   <script src="storage.js"></script>
-  <script src="script.js"></script>
-  </body>
+  <script src="dashboard.js"></script>
+</body>
 </html>

@@ -21,7 +21,8 @@ Fable Markets Exchange is a browser-based fantasy commodities simulation that mo
 
 /project-root
 │
-├── index.html          # Main trading dashboard
+├── index.html          # Market dashboard
+├── exchange.html       # Main trading interface
 ├── exchange-index.html # List of all securities
 ├── style.css           # Dark mode layout & UI
 ├── script.js           # Core simulation logic
@@ -31,7 +32,7 @@ Fable Markets Exchange is a browser-based fantasy commodities simulation that mo
 
     Clone or download the repo
 
-    Open index.html for trading or exchange-index.html to view all securities
+    Open index.html for the dashboard, exchange.html to trade, or exchange-index.html to view all securities
 
     Interact with the market (select a security, buy/sell, observe price shifts)
 
