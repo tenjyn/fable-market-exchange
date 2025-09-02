@@ -76,7 +76,9 @@ button:hover {
   font-size: 14px;
   overflow: hidden;
   border-bottom: 1px solid #333;
-  position: relative;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
 #newsContent {

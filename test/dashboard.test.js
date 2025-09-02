@@ -13,10 +13,28 @@ class LocalStorageMock {
 
 function createDom() {
   let domContentLoaded;
-  const summary = { innerHTML: '' };
+  const summary = {
+    innerHTML: '',
+    textContent: '',
+    appendChild(node) { this.innerHTML += node.textContent; }
+  };
   const document = {
     getElementById(id) { return id === 'dashboardSummary' ? summary : null; },
-    addEventListener(event, cb) { if (event === 'DOMContentLoaded') domContentLoaded = cb; }
+    addEventListener(event, cb) { if (event === 'DOMContentLoaded') domContentLoaded = cb; },
+    createElement() {
+      return {
+        textContent: '',
+        appendChild(child) { this.textContent += child.textContent; }
+      };
+    },
+    createDocumentFragment() {
+      const frag = {
+        children: [],
+        append(...nodes) { this.children.push(...nodes); },
+        get textContent() { return this.children.map(n => n.textContent).join(''); }
+      };
+      return frag;
+    }
   };
   return { document, summary, trigger: () => domContentLoaded && domContentLoaded() };
 }
