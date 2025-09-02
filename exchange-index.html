@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Exchange Index</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>📊 Exchange Index</h1>
+    <nav>
+      <a href="dashboard.html">Dashboard</a> |
+      <a href="portfolio.html">Portfolio</a> |
+      <a href="index.html">Exchange</a> |
+      <a href="exchange-index.html" class="active">Index</a> |
+      <a href="archive.html">Archive</a> |
+      <a href="civic-report.html">The Civic Report</a>
+    </nav>
+  </header>
+  <main>
+    <section id="indexSection">
+      <h2>All Securities</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Volatility</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody id="securitiesTable"></tbody>
+      </table>
+    </section>
+  </main>
+  <script src="securities.js"></script>
+  <script src="exchange-index.js"></script>
+</body>
+</html>
+
