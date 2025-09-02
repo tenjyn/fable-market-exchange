@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { loadPortfolioData, savePortfolioData } = require('../storage.js');
+let loadPortfolioData, savePortfolioData;
 
 class LocalStorageMock {
   constructor() {
@@ -24,6 +24,8 @@ global.localStorage = new LocalStorageMock();
 
 test.beforeEach(() => {
   global.localStorage.clear();
+  delete require.cache[require.resolve('../storage.js')];
+  ({ loadPortfolioData, savePortfolioData } = require('../storage.js'));
 });
 
 test('loadPortfolioData returns defaults when storage empty', () => {
@@ -59,4 +61,29 @@ test('loadPortfolioData handles invalid JSON', () => {
   console.error = originalError;
   assert.deepEqual(data, { marks: 1000, portfolio: {}, tradeHistory: [] });
   assert.strictEqual(localStorage.getItem('fablePortfolio'), null);
+});
+
+test('loadPortfolioData caches values until savePortfolioData updates', () => {
+  localStorage.setItem('fablePortfolio', JSON.stringify({
+    marks: 1000,
+    portfolio: { WHT: { units: 1, avgCost: 0 } },
+    tradeHistory: []
+  }));
+
+  const first = loadPortfolioData();
+
+  // modify storage directly; load should still return cached data
+  localStorage.setItem('fablePortfolio', JSON.stringify({
+    marks: 2000,
+    portfolio: { WHT: { units: 2, avgCost: 0 } },
+    tradeHistory: []
+  }));
+  const second = loadPortfolioData();
+  assert.deepEqual(second, first);
+
+  // saving new data updates the cache
+  const newData = { marks: 3000, portfolio: { WHT: { units: 3, avgCost: 0 } }, tradeHistory: [] };
+  savePortfolioData(newData);
+  const third = loadPortfolioData();
+  assert.deepEqual(third, newData);
 });
