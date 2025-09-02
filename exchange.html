@@ -21,6 +21,23 @@
     </header>
 
   <main>
+    <section id="news">
+      <h2>News Feed</h2>
+      <div id="newsTicker"><div id="newsContent">Loading...</div></div>
+      <div class="news-controls">
+        <label for="newsFilter">Filter:</label>
+        <select id="newsFilter">
+          <option value="all">All</option>
+          <option value="trades">Trades</option>
+          <option value="surges">Surges</option>
+          <option value="crashes">Crashes</option>
+        </select>
+      </div>
+      <div id="eventArchive"></div>
+      <h3>Top Stories</h3>
+      <div id="topStories"></div>
+    </section>
+
     <section id="marketSummary">
       <h2>Market Summary</h2>
       <div id="topGainers"></div>
@@ -49,23 +66,6 @@
       <p>Available Funds: <span id="marksDisplay">₥0.00</span></p>
       <ul id="portfolioList"></ul>
       <ul id="recentTrades"></ul>
-    </section>
-
-    <section id="news">
-      <h2>News Feed</h2>
-      <div id="newsTicker"><div id="newsContent">Loading...</div></div>
-      <div class="news-controls">
-        <label for="newsFilter">Filter:</label>
-        <select id="newsFilter">
-          <option value="all">All</option>
-          <option value="trades">Trades</option>
-          <option value="surges">Surges</option>
-          <option value="crashes">Crashes</option>
-        </select>
-      </div>
-      <div id="eventArchive"></div>
-      <h3>Top Stories</h3>
-      <div id="topStories"></div>
     </section>
 
     <section id="details">
