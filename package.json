@@ -4,6 +4,8 @@
   "description": "📘 Fable Markets Exchange",
   "main": "npc-log.js",
   "scripts": {
+    "build": "node build.js",
+    "pretest": "npm run build",
     "test": "node --test"
   },
   "keywords": [],
