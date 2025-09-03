@@ -175,14 +175,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const newUnits = holding.units + qty;
         holding.avgCost = ((holding.avgCost * holding.units) + total) / newUnits;
         holding.units = newUnits;
-        logEvent(`🏦 ✅ Bought ${qty} ${key} for ${formatMarks(total)}`);
+        logEvent(`🏦 ✅ Bought ${qty} ${key} at ${formatMarks(selected.price)} each for ${formatMarks(total)}`);
       tradeHistory.push(`[${time}] Bought ${qty} ${key} at ${formatMarks(selected.price)}`);
     } else if (type === "sell" && portfolio[key] && portfolio[key].units >= qty) {
       marks += total;
       const holding = portfolio[key];
       holding.units -= qty;
       if (holding.units === 0) delete portfolio[key];
-      logEvent(`🏦 🪙 Sold ${qty} ${key} for ${formatMarks(total)}`);
+      logEvent(`🏦 🪙 Sold ${qty} ${key} at ${formatMarks(selected.price)} each for ${formatMarks(total)}`);
       tradeHistory.push(`[${time}] Sold ${qty} ${key} at ${formatMarks(selected.price)}`);
     } else {
       logEvent(`🏦 ⚠️ Trade failed.`);
@@ -301,7 +301,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const qty = Math.floor(Math.random() * 20 + 1);
       const action = Math.random() < 0.5 ? "buys" : "sells";
       const npc = npcProfiles[name];
-      const msg = `🏦 ${name} ${action} ${qty} units of ${target.code}`;
+      const msg = `🏦 ${name} ${action} ${qty} units of ${target.code} at ${formatMarks(target.price)}`;
       const time = new Date().toLocaleTimeString();
       const entry = `[${time}] ${msg}`;
 
