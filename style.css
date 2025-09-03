@@ -72,8 +72,8 @@ button:hover {
   font-family: monospace;
   background-color: #1e1e1e;
   color: #00ffc8;
-  padding: 10px;
-  font-size: 14px;
+  padding: 15px;
+  font-size: 18px;
   overflow: hidden;
   border-bottom: 1px solid #333;
   position: sticky;
