@@ -58,31 +58,51 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  function drawAllocationChart() {
-    const labels = [];
-    const values = [];
-    const backgroundColors = [];
+    function drawAllocationChart() {
+      const labels = [];
+      const values = [];
+      const backgroundColors = [];
 
-    for (const code in portfolio) {
-      const sec = securities.find(s => s.code === code);
-      const holding = portfolio[code];
-      labels.push(code);
-      values.push(holding.units * sec.price);
-      backgroundColors.push(randomColor());
+      for (const code in portfolio) {
+        const sec = securities.find(s => s.code === code);
+        const holding = portfolio[code];
+        labels.push(code);
+        values.push(holding.units * sec.price);
+        backgroundColors.push(randomColor());
+      }
+
+      if (typeof Chart !== "undefined") {
+        new Chart(ctx, {
+          type: "pie",
+          data: { labels, datasets: [{ data: values, backgroundColor: backgroundColors }] },
+          options: { responsive: true, plugins: { legend: { position: "bottom" } } }
+        });
+      } else {
+        drawFallbackPieChart(document.getElementById("allocationChart"), values, backgroundColors);
+      }
     }
 
-    new Chart(ctx, {
-      type: "pie",
-      data: {
-        labels,
-        datasets: [{ data: values, backgroundColor: backgroundColors }]
-      },
-      options: {
-        responsive: true,
-        plugins: { legend: { position: "bottom" } }
-      }
-    });
-  }
+    // Very small pie chart drawer used when Chart.js isn't loaded
+    function drawFallbackPieChart(canvas, values, colors) {
+      const ctx2 = canvas.getContext("2d");
+      const size = Math.min(canvas.clientWidth || 300, 300);
+      canvas.width = canvas.height = size;
+      const total = values.reduce((a, b) => a + b, 0) || 1;
+      let start = 0;
+      const cx = size / 2;
+      const cy = size / 2;
+      const radius = size / 2 - 5;
+      values.forEach((v, i) => {
+        const slice = (v / total) * Math.PI * 2;
+        ctx2.beginPath();
+        ctx2.moveTo(cx, cy);
+        ctx2.fillStyle = colors[i];
+        ctx2.arc(cx, cy, radius, start, start + slice);
+        ctx2.closePath();
+        ctx2.fill();
+        start += slice;
+      });
+    }
 
   function randomColor() {
     const h = Math.floor(Math.random() * 360);

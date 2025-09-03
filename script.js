@@ -121,25 +121,65 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("volatilityData").textContent = `Volatility: ${security.volatility}`;
     }
 
-    function drawChart(security) {
-      const chartCanvas = document.getElementById("priceChart");
-      if (!chartCanvas || !chartCanvas.getContext) return;
-      const ctx = chartCanvas.getContext("2d");
-      if (priceChart) priceChart.destroy();
-      const history = generatePriceHistory(security.price, security.volatility);
-      priceChart = new Chart(ctx, {
-        type: "line",
-        data: {
-          labels: history.map((_, i) => `Day ${i + 1}`),
-          datasets: [{ label: `${security.code} Price History`, data: history, borderColor: "#7ad9ff", backgroundColor: "rgba(122, 217, 255, 0.1)", fill: true }]
-        },
-        options: {
-          responsive: true,
-          plugins: { legend: { display: true } },
-          scales: { x: { display: true }, y: { beginAtZero: false } }
+      function drawChart(security) {
+        const chartCanvas = document.getElementById("priceChart");
+        if (!chartCanvas || !chartCanvas.getContext) return;
+        const ctx = chartCanvas.getContext("2d");
+        const history = generatePriceHistory(security.price, security.volatility);
+
+        // Prefer Chart.js if available; otherwise draw a simple canvas chart.
+        if (typeof Chart !== "undefined") {
+          if (priceChart) priceChart.destroy();
+          priceChart = new Chart(ctx, {
+            type: "line",
+            data: {
+              labels: history.map((_, i) => `Day ${i + 1}`),
+              datasets: [{ label: `${security.code} Price History`, data: history, borderColor: "#7ad9ff", backgroundColor:"rgba(122, 217, 255, 0.1)", fill: true }]
+            },
+            options: {
+              responsive: true,
+              plugins: { legend: { display: true } },
+              scales: { x: { display: true }, y: { beginAtZero: false } }
+            }
+          });
+        } else {
+          drawFallbackLineChart(chartCanvas, history);
         }
-      });
-    }
+      }
+
+      // Basic line chart renderer used when Chart.js is not loaded
+      function drawFallbackLineChart(canvas, data) {
+        const ctx = canvas.getContext("2d");
+        const width = canvas.clientWidth || 600;
+        const height = 300;
+        canvas.width = width;
+        canvas.height = height;
+        ctx.clearRect(0, 0, width, height);
+
+        const padding = 40;
+        const min = Math.min(...data);
+        const max = Math.max(...data);
+        const xStep = (width - padding * 2) / (data.length - 1);
+        const yScale = (height - padding * 2) / (max - min || 1);
+
+        ctx.strokeStyle = "#555";
+        ctx.beginPath();
+        ctx.moveTo(padding, padding);
+        ctx.lineTo(padding, height - padding);
+        ctx.lineTo(width - padding, height - padding);
+        ctx.stroke();
+
+        ctx.strokeStyle = "#7ad9ff";
+        ctx.beginPath();
+        data.forEach((v, i) => {
+          const x = padding + i * xStep;
+          const y = height - padding - (v - min) * yScale;
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+      }
+
 
     function generatePriceHistory(base, vol) {
       const history = [];
