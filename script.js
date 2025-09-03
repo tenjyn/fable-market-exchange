@@ -18,6 +18,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const npcTradeLog = JSON.parse(localStorage.getItem("npcTradeLog")) || [];
 
     const securities = SECURITIES.map(sec => ({ ...sec, basePrice: sec.price }));
+    function storeSecurities() {
+      localStorage.setItem("securitiesData", JSON.stringify(securities));
+    }
+    storeSecurities();
     let selected = null;
     let priceChart = null;
 
@@ -326,6 +330,7 @@ document.addEventListener("DOMContentLoaded", () => {
         updateStats(target);
         updateMarketSummary();
       }
+      storeSecurities();
     }
 
     // Initial load
