@@ -40,7 +40,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const dropdown = document.getElementById("productDropdown");
     const marksDisplay = document.getElementById("marksDisplay");
-    const newsTicker = document.getElementById("newsContent");
     const portfolioList = document.getElementById("portfolioList");
     const recentTrades = document.getElementById("recentTrades");
     const npcLog = document.getElementById("npcLog");
@@ -57,7 +56,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (
       !dropdown ||
       !marksDisplay ||
-      !newsTicker ||
       !portfolioList ||
       !recentTrades ||
       !npcLog ||
@@ -265,7 +263,7 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.setItem("newsArchive", JSON.stringify(newsArchive.slice(-100)));
       renderTopStories();
       renderNewsArchive();
-      refreshTicker();
+      notifyTickerUpdate();
     }
 
     function renderNewsArchive() {
@@ -287,14 +285,8 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
-    function refreshTicker() {
-      if (!newsTicker) return;
-      const content = newsArchive.join("  |  ");
-      newsTicker.textContent = content + "  |  " + content;
-      newsTicker.style.animation = "none";
-      void newsTicker.offsetWidth;
-      newsTicker.style.animation = "";
-      newsTicker.style.animation = "ticker 30s linear infinite";
+    function notifyTickerUpdate() {
+      document.dispatchEvent(new CustomEvent("news:ticker-refresh"));
     }
 
     function updateMarketSummary() {
@@ -378,7 +370,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderTopStories();
     populateNPCDropdown();
     updatePortfolio();
-    refreshTicker();
+    notifyTickerUpdate();
 
 
     function runSimulations() {
