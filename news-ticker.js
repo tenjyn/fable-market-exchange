@@ -30,4 +30,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
   renderTicker();
   setInterval(renderTicker, 15000);
+  document.addEventListener('news:ticker-refresh', renderTicker);
 });
